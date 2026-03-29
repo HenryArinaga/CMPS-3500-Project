@@ -4,6 +4,6 @@
 #include <vector>
 #include <string>
 
-std::vector<std::string> parse(const std::vector<std::string>& tokens);
+std::vector<std::string> parseTokens(const std::vector<std::string>& input_tokens);
 
 #endif

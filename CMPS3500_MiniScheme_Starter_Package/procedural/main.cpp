@@ -7,13 +7,14 @@
 std::string read_file(const std::string& path);
 
 int main() {
-    std::string code = read_file("../tests/public/addon_03.scm");
+    // Example of using the file loader, tokenizer, and parser together
+    std::string source_code = read_file("../tests/public/addon_03.scm");
 
-    std::vector<std::string> tokens = tokenize(code);
-    std::vector<std::string> parsed = parse(tokens);
+    std::vector<std::string> token_list = tokenizeSource(source_code);
+    std::vector<std::string> parsed_expression = parseTokens(token_list);
 
     std::cout << "Parsed result:\n";
-    for (const auto& t : parsed) {
+    for (const auto& t : parsed_expression) {
         std::cout << t << "\n";
     }
 
