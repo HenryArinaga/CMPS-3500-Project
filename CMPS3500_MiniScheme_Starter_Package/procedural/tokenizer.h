@@ -4,6 +4,6 @@
 #include <vector>
 #include <string>
 
-std::vector<std::string> tokenizeSource(const std::string& input);
+std::vector<std::string> tokenize(const std::string& input);
 
 #endif
