@@ -1,3 +1,11 @@
+/*
+  / NAME: Henry Ariaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 1                                  /
+  / ORGN: CSUB - CMPS 3500                              /
+  / FILE: parser.cpp                                    /
+  / DATE: 03/29/2026                                    /
+*/
+
 #include "parser.h"
 #include <iostream>
 

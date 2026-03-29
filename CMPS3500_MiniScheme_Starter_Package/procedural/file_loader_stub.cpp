@@ -1,3 +1,13 @@
+/*
+  / NAME: Walter Morales (provided file loader stub)    /
+  / NAME: Henry Ariaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 1                                  /
+  / ORGN: CSUB - CMPS 3500                              /
+  / FILE: file_loader_stub.cpp                          /
+  / DATE: 03/15/2026 provided by Walter Morales         /
+  / DATE: 03/29/2026 added exception catch              /
+*/
+
 // Tiny file-loading helper stub for the procedural implementation.
 // Replace or adapt as needed.
 #include <fstream>
