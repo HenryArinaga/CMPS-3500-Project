@@ -12,10 +12,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cctype>
 
 std::string read_file(const std::string &path);
 
-// simple helper to check if a string is a number
+// check if string is a number
 bool is_number(const std::string &s)
 {
     int i;
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
     std::vector<std::string> token_list = tokenize(source_code);
     std::vector<std::vector<std::string> > expressions = split_expressions(token_list);
 
-    // create the global scope
+    // create global scope
     Scope *current_scope = enter_scope(NULL);
 
     int i;
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        // (define x 10)
+        // Handle define and variable assignment
         if (parsed[0] == "define")
         {
             if (parsed.size() >= 3)
@@ -65,7 +66,6 @@ int main(int argc, char *argv[])
                 std::string value = parsed[2];
 
                 add_binding(current_scope, name, value);
-
                 std::cout << "Defined: " << name << " = " << value << "\n";
             }
         }
@@ -73,7 +73,45 @@ int main(int argc, char *argv[])
         {
             std::string op = parsed[0];
 
-            // handle arithmetic operations
+            // IF expression
+            if (op == "if")
+            {
+                if (parsed.size() == 4)
+                {
+                    std::string condition = parsed[1];
+                    std::string true_branch = parsed[2];
+                    std::string false_branch = parsed[3];
+
+                    std::string cond_value;
+
+                    // resolve condition
+                    if (condition == "#t" || condition == "#f")
+                    {
+                        cond_value = condition;
+                    }
+                    else
+                    {
+                        cond_value = lookup_binding(current_scope, condition);
+                    }
+
+                    if (cond_value == "#t")
+                    {
+                        std::cout << true_branch << "\n";
+                    }
+                    else
+                    {
+                        std::cout << false_branch << "\n";
+                    }
+                }
+                else
+                {
+                    std::cout << "Error: invalid if expression\n";
+                }
+
+                continue;
+            }
+
+            // Arithmetic or variable lookup
             if (parsed.size() == 3)
             {
                 std::string left = parsed[1];
@@ -82,7 +120,6 @@ int main(int argc, char *argv[])
                 int a;
                 int b;
 
-                // resolve left value
                 if (is_number(left))
                 {
                     a = std::stoi(left);
@@ -93,7 +130,6 @@ int main(int argc, char *argv[])
                     a = std::stoi(val);
                 }
 
-                // resolve right value
                 if (is_number(right))
                 {
                     b = std::stoi(right);
@@ -127,7 +163,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                // single variable lookup
+                // variable lookup
                 std::string value = lookup_binding(current_scope, parsed[0]);
                 std::cout << parsed[0] << " = " << value << "\n";
             }
