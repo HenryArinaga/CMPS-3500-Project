@@ -20,7 +20,7 @@ Scope *exitScope(Scope *current)
     return parent_scope;
 }
 
-void addBinding(Scope *scope, const std::string &name, const std::string &value)
+void addScopeEntry(Scope *scope, const std::string &name, const std::string &value)
 {
     if (scope == nullptr)
     {
@@ -33,7 +33,7 @@ void addBinding(Scope *scope, const std::string &name, const std::string &value)
     scope->scope_entries.push_back(b);
 }
 
-std::string lookupBinding(Scope *scope, const std::string &name)
+std::string lookupScopeEntry(Scope *scope, const std::string &name)
 {
     Scope *temp = scope;
 

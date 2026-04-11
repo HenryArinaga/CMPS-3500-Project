@@ -19,8 +19,8 @@ struct Scope
 Scope *enterScope(Scope *current);
 Scope *exitScope(Scope *current);
 
-void addBinding(Scope *scope, const std::string &name, const std::string &value);
-std::string lookupBinding(Scope *scope, const std::string &name);
+void addScopeEntry(Scope *scope, const std::string &name, const std::string &value);
+std::string lookupScopeEntry(Scope *scope, const std::string &name);
 bool existsInCurrentScope(Scope *scope, const std::string &name);
 
 #endif

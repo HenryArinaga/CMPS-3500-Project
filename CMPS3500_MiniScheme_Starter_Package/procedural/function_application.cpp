@@ -9,7 +9,7 @@ static int resolveValue(const std::string& token, Scope* scope)
 
     if (!isdigit(val[0]) && val[0] != '-')
     {
-        val = lookupBinding(scope, val);
+        val = lookupScopeEntry(scope, val);
     }
 
     return std::stoi(val);

@@ -34,7 +34,7 @@ void evaluate(const std::vector<std::string> &expr, Scope *scope)
         if (parsed.size() == 1)
         {
             // variable lookup
-            std::string value = lookupBinding(scope, op);
+            std::string value = lookupScopeEntry(scope, op);
             std::cout << op << " = " << value << "\n";
         }
         else

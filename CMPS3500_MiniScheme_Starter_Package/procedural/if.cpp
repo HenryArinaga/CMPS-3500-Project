@@ -21,7 +21,7 @@ void handleIf(const std::vector<std::string>& expr, Scope* scope)
     }
     else
     {
-        cond_value = lookupBinding(scope, condition);
+        cond_value = lookupScopeEntry(scope, condition);
     }
 
     if (cond_value == "#t")
