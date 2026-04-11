@@ -19,6 +19,7 @@ std::string handleFunctionApplication(const std::vector<std::string>& expr, Scop
 {
     std::string op = expr[0];
 
+    //arithmetic
     if (op == "+")
     {
         int result = 0;
@@ -87,6 +88,52 @@ std::string handleFunctionApplication(const std::vector<std::string>& expr, Scop
 
         std::cout << result << "\n";
         return std::to_string(result);
+    }
+
+    //comparison
+    else if (op == "="){
+        std::string result;
+        bool comparison = resolveValue(expr[1], scope) == resolveValue(expr[2], scope);
+
+        if (comparison == true){
+            result = "#t";
+        }
+        else{
+            result = "#f";
+        }
+        
+        std::cout << result << "\n";
+        return result;
+    }
+
+    else if (op == "<"){
+        std::string result;
+        bool comparison = resolveValue(expr[1], scope) < resolveValue(expr[2], scope);
+
+        if (comparison == true){
+            result = "#t";
+        }
+        else{
+            result = "#f";
+        }
+
+        std::cout << result << "\n";
+        return result;
+    }
+
+    else if (op == ">"){
+        std::string result;
+        bool comparison = resolveValue(expr[1], scope) > resolveValue(expr[2], scope);
+
+        if (comparison == true){
+            result = "#t";
+        }
+        else{
+            result = "#f";
+        }
+        
+        std::cout << result << "\n";
+        return result;
     }
 
     std::cout << "Unknown function: " << op << "\n";
