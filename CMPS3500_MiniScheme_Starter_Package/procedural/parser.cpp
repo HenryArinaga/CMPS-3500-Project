@@ -21,6 +21,7 @@ std::vector<std::string> parseTokens(const std::vector<std::string> &input_token
     }
 
     // Check for parentheses
+    // if it starts with '(' it should end with ')' 
     if (input_tokens[0] == "(")
     {
 
@@ -58,18 +59,19 @@ std::vector<std::vector<std::string>> splitExpressions(const std::vector<std::st
     {
 
         if (tokens[i] == "(")
-        {
+        {       
             if (depth == 0)
             {
                 current.clear();
             }
+
             depth++;
         }
 
         if (depth > 0)
         {
             current.push_back(tokens[i]);
-        }
+        } // current: {(}, depth = 1
 
         if (tokens[i] == ")")
         {

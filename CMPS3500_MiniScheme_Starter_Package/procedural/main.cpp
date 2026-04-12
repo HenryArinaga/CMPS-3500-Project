@@ -18,21 +18,36 @@ std::string read_file(const std::string& path);
 
 int main(int argc, char *argv[])
 {
+    // ----This was used to test our reader for checkpoint 1 using
+    // ----the command line. Checkpoint 2 should use run_all.sh
     if (argc != 2)
     {
         std::cout << "Usage: ./miniscm <file_name>\n";
         return 1;
     }
-
     std::string file_path = std::string("../tests/public/") + argv[1];
 
+    // ---- whole process starts here ----
+
+    // Step 1: Get source code from file.
     std::string source = read_file(file_path);
 
+    // Step 2: turn that source code into TOKENS
     auto tokens = tokenize(source);
-    auto expressions = splitExpressions(tokens);
 
+
+    // Step 3: Turn tokens into separate expressions.
+    //         each expression has a depth level, and
+    //         it can have one or multiple tokens
+    auto expressions = splitExpressions(tokens);
+    //                 splitExpressions() is found in parser.cpp
+
+    //Step 4: Deal with SCOPE
+    // Start by defining global scope
     Scope* global = enterScope(NULL);
 
+
+    // Step 5: EVALUATE every expression found in the list of epxressions
     for (const auto& expr : expressions)
     {
         evaluate(expr, global);
