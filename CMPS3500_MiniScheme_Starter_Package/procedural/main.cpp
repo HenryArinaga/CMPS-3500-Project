@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        std::cout << "Usage: ./miniscm <file_name>\n";
+        std::cout << "Usage: ./test <file_name>\n";
         return 1;
     }
 
