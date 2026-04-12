@@ -1,3 +1,10 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 2                                  /
+  / ORGN: CSUB - CMPS 3500                              /
+  / FILE: if.h                                  /
+  / DATE: 04/11/2026                                    /
+*/
 #ifndef IF_H
 #define IF_H
 

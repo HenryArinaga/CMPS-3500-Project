@@ -1,8 +1,17 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 2                                  /
+  / ORGN: CSUB - CMPS 3500                              /
+  / FILE: function_application.cpp                      /
+  / DATE: 04/11/2026                                    /
+*/
 #include "function_application.h"
 #include "scope.h"
 #include <iostream>
 #include <cctype>
 
+// Resolves a token to an integer value
+// looking up variables in the scope if necessary
 static int resolveValue(const std::string& token, Scope* scope)
 {
     std::string val = token;
@@ -14,11 +23,14 @@ static int resolveValue(const std::string& token, Scope* scope)
 
     return std::stoi(val);
 }
-
-std::string handleFunctionApplication(const std::vector<std::string>& expr, Scope* scope)
+// Handles function application for built-in functions like +, -, *, /
+std::string handleFunctionApplication(
+    const std::vector<std::string>& expr,
+    Scope* scope
+)
 {
     std::string op = expr[0];
-
+    // Handle built-in functions
     if (op == "+")
     {
         int result = 0;
@@ -31,7 +43,7 @@ std::string handleFunctionApplication(const std::vector<std::string>& expr, Scop
         std::cout << result << "\n";
         return std::to_string(result);
     }
-
+    // Implement other operations similarly
     else if (op == "-")
     {
         if (expr.size() < 2)
@@ -49,7 +61,7 @@ std::string handleFunctionApplication(const std::vector<std::string>& expr, Scop
         std::cout << result << "\n";
         return std::to_string(result);
     }
-
+    
     else if (op == "*")
     {
         int result = 1;
@@ -88,7 +100,7 @@ std::string handleFunctionApplication(const std::vector<std::string>& expr, Scop
         std::cout << result << "\n";
         return std::to_string(result);
     }
-
+    //unknown function if we get here
     std::cout << "Unknown function: " << op << "\n";
     return "UNKNOWN_FUNCTION";
 }

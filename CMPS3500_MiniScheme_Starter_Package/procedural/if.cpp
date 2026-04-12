@@ -1,6 +1,14 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 2                                  /
+  / ORGN: CSUB - CMPS 3500                              /
+  / FILE: if.cpp                                  /
+  / DATE: 04/11/2026                                    /
+*/
 #include "if.h"
 #include <iostream>
 
+// Handles the built-in if expression
 void handleIf(const std::vector<std::string>& expr, Scope* scope)
 {
     if (expr.size() != 4)
@@ -14,7 +22,7 @@ void handleIf(const std::vector<std::string>& expr, Scope* scope)
     std::string false_branch = expr[3];
 
     std::string cond_value;
-
+    // If the condition is a literal #t or #f, use it directly
     if (condition == "#t" || condition == "#f")
     {
         cond_value = condition;

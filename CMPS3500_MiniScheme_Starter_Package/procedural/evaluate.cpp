@@ -5,13 +5,14 @@
 #include <iostream>
 #include "function_application.h"
 
+// Evaluates a single expression
 void evaluate(const std::vector<std::string> &expr, Scope *scope)
 {
     if (expr.empty())
     {
         return;
     }
-
+    // Parse the expression first
     std::vector<std::string> parsed = parseTokens(expr);
 
     if (parsed.empty())
@@ -20,7 +21,7 @@ void evaluate(const std::vector<std::string> &expr, Scope *scope)
     }
 
     std::string op = parsed[0];
-
+    // Check for built-in operations first
     if (op == "if")
     {
         handleIf(parsed, scope);

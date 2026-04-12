@@ -13,7 +13,7 @@
 #include <iostream>
 #include <string>
 
-// forward declaration 
+
 std::string read_file(const std::string& path);
 
 int main(int argc, char *argv[])
