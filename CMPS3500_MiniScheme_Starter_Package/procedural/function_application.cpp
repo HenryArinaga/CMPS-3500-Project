@@ -144,6 +144,59 @@ std::string handleFunctionApplication(
         std::cout << result << "\n";
         return std::to_string(result);
     }
+
+    // comparison
+    else if (op == "=")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        bool comparison =
+            resolveExpressionValue(expr, i, scope) ==
+            resolveExpressionValue(expr, i, scope);
+        std::string result = comparison ? "#t" : "#f";
+
+        std::cout << result << "\n";
+        return result;
+    }
+
+    else if (op == "<")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        bool comparison =
+            resolveExpressionValue(expr, i, scope) <
+            resolveExpressionValue(expr, i, scope);
+        std::string result = comparison ? "#t" : "#f";
+
+        std::cout << result << "\n";
+        return result;
+    }
+
+    else if (op == ">")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        bool comparison =
+            resolveExpressionValue(expr, i, scope) >
+            resolveExpressionValue(expr, i, scope);
+        std::string result = comparison ? "#t" : "#f";
+
+        std::cout << result << "\n";
+        return result;
+    }
+
     //unknown function if we get here
     std::cout << "Unknown function: " << op << "\n";
     return "UNKNOWN_FUNCTION";
