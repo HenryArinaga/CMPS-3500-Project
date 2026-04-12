@@ -21,6 +21,7 @@ std::vector<std::string> parseTokens(const std::vector<std::string> &input_token
     }
 
     // Check for parentheses
+    // if it starts with '(' it should end with ')' 
     if (input_tokens[0] == "(")
     {
 
