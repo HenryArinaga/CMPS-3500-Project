@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::string file_path = std::string("../tests/public/") + argv[1];
+    std::string file_path = std::string("./tests/public/") + argv[1];
 
     // ---- whole process starts here ----
 
@@ -57,9 +57,17 @@ int main(int argc, char *argv[])
 
         if (!result.empty())
         {
-            std::cout << argv[1] << " -> Status: " << status << 
-            " | Result: " << result << " | Type: " << type << "\n";
-            //std::cout << result << "\n";
+            //std::cout << argv[1] << " -> Status: " << status << 
+            //" | Result: " << result << " | Type: " << type << "\n";
+            std::cout << result << "\n";
+            if (result == "#t" || result == "#f")
+            {
+                std::cout << "Type: bool" << "\n";
+            }
+            else 
+            {
+                std::cout << "Type: int";
+            }
         }
     }
 
