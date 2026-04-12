@@ -38,6 +38,7 @@ void addScopeEntry(Scope *scope, const std::string &name, const std::string &val
     ScopeEntry b;
     b.name = name;
     b.value = value;
+    b.lambda = nullptr;
     scope->scope_entries.push_back(b);
 }
 // Looks up a name in the scope chain and returns its value, 

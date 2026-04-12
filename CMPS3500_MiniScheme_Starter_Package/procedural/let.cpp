@@ -29,12 +29,39 @@ std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
 
         std::vector<std::string> value_expr;
 
-        while (expr[i] != ")")
+        if (expr[i] == "(")
+        {
+            int depth = 0;
+
+            while (i < (int)expr.size())
+            {
+                value_expr.push_back(expr[i]);
+
+                if (expr[i] == "(")
+                {
+                    depth++;
+                }
+                else if (expr[i] == ")")
+                {
+                    depth--;
+
+                    if (depth == 0)
+                    {
+                        i++;
+                        break;
+                    }
+                }
+
+                i++;
+            }
+        }
+        else
         {
             value_expr.push_back(expr[i]);
             i++;
         }
 
+        if (expr[i] != ")") return "ERROR";
         i++;
 
         std::string value = evaluate(value_expr, scope);
