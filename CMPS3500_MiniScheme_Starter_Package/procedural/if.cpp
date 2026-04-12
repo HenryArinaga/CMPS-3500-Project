@@ -6,40 +6,34 @@
   / DATE: 04/11/2026                                    /
 */
 #include "if.h"
+#include "evaluate.h"
+#include "parser.h"
 #include <iostream>
 
 // Handles the built-in if expression
 std::string handleIf(const std::vector<std::string>& expr, Scope* scope)
 {
-    if (expr.size() != 4)
+    std::vector<std::string> tail(expr.begin() + 1, expr.end());
+    std::vector<std::vector<std::string>> parts = splitExpressions(tail);
+
+    if (parts.size() != 3)
     {
         std::cout << "Error: invalid if expression\n";
         return "";
     }
 
-    std::string condition = expr[1];
-    std::string true_branch = expr[2];
-    std::string false_branch = expr[3];
-
-    std::string cond_value;
-    // If the condition is a literal #t or #f, use it directly
-    if (condition == "#t" || condition == "#f")
-    {
-        cond_value = condition;
-    }
-    else
-    {
-        cond_value = lookupScopeEntry(scope, condition);
-    }
+    std::string cond_value = evaluate(parts[0], scope);
 
     if (cond_value == "#t")
     {
-        std::cout << true_branch << "\n";
-        return true_branch;
+        return evaluate(parts[1], scope);
     }
-    else
+
+    if (cond_value == "#f")
     {
-        std::cout << false_branch << "\n";
-        return false_branch;
+        return evaluate(parts[2], scope);
     }
+
+    std::cout << "Error: invalid if condition\n";
+    return "";
 }

@@ -82,7 +82,6 @@ std::string handleFunctionApplication(
             result += resolveExpressionValue(expr, i, scope);
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
     // Implement other operations similarly
@@ -101,7 +100,6 @@ std::string handleFunctionApplication(
             result -= resolveExpressionValue(expr, i, scope);
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
     
@@ -114,7 +112,6 @@ std::string handleFunctionApplication(
             result *= resolveExpressionValue(expr, i, scope);
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
 
@@ -141,7 +138,6 @@ std::string handleFunctionApplication(
             result /= divisor;
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
 
@@ -159,7 +155,6 @@ std::string handleFunctionApplication(
             resolveExpressionValue(expr, i, scope);
         std::string result = comparison ? "#t" : "#f";
 
-        std::cout << result << "\n";
         return result;
     }
 
@@ -176,7 +171,6 @@ std::string handleFunctionApplication(
             resolveExpressionValue(expr, i, scope);
         std::string result = comparison ? "#t" : "#f";
 
-        std::cout << result << "\n";
         return result;
     }
 
@@ -193,7 +187,6 @@ std::string handleFunctionApplication(
             resolveExpressionValue(expr, i, scope);
         std::string result = comparison ? "#t" : "#f";
 
-        std::cout << result << "\n";
         return result;
     }
 

@@ -35,7 +35,12 @@ int main(int argc, char *argv[])
 
     for (const auto& expr : expressions)
     {
-        evaluate(expr, global);
+        std::string result = evaluate(expr, global);
+
+        if (!result.empty())
+        {
+            std::cout << result << "\n";
+        }
     }
 
     exitScope(global);
