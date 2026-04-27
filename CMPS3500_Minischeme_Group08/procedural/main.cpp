@@ -30,7 +30,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::string file_path = std::string("./tests/public/") + argv[1];
+    // old way to read file path
+    //std::string file_path = std::string("./tests/public/") + argv[1];
+    std::string file_path = argv[1];
 
     // ---- whole process starts here ----
 

@@ -11,11 +11,13 @@ case "$cmd" in
     impl="${2:-}"
     file="${3:-}"
 
-    # if impl=procedural:
-    #if [ $impl -eq "procedural" ]; then
     if [ "$2" == "procedural" ]; then
 
-        output=$(./procedural/cpp_interpreter "$file") # run: cpp_interpreter <file_name.scm>
+        if [ ! -f "./cpp_interpreter" ]; then
+            g++ ./procedural/*.cpp -o ./cpp_interpreter
+        fi
+
+        output=$(./cpp_interpreter "$file") # run: cpp_interpreter <file_name.scm>
 
         echo "Implementation: ${impl}"
         echo "Case: ${file}"
@@ -24,7 +26,11 @@ case "$cmd" in
         #echo "Type: -----"   # <----- CHANGE TYPE, maybe use a variable.
         
         #implement error messages (later)
-        #echo "Error: NOT_IMPLEMENTED"  
+        #echo "Error: NOT_IMPLEMENTED"
+
+        if [ -f "./cpp_interpreter" ]; then
+            rm cpp_interpreter
+        fi
     fi
     ;;
   *)
