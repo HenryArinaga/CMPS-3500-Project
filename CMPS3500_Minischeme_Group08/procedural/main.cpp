@@ -19,19 +19,7 @@ std::string read_file(const std::string& path);
 int main(int argc, char *argv[])
 {
     std::string result = "";
-    std::string status = "OK";
-    std::string type = "auto";
 
-    // ----This was used to test our reader for checkpoint 1 using
-    // ----the command line. Checkpoint 2 should use run_all.sh
-    if (argc != 2)
-    {
-        std::cout << "Usage: ./test <file_name>\n";
-        return 1;
-    }
-
-    // old way to read file path
-    //std::string file_path = std::string("./tests/public/") + argv[1];
     std::string file_path = argv[1];
 
     // ---- whole process starts here ----
@@ -59,16 +47,14 @@ int main(int argc, char *argv[])
 
         if (!result.empty())
         {
-            //std::cout << argv[1] << " -> Status: " << status << 
-            //" | Result: " << result << " | Type: " << type << "\n";
             std::cout << result << "\n";
             if (result == "#t" || result == "#f")
             {
-                std::cout << "Type: bool" << "\n";
+                std::cout << "bool";
             }
-            else 
+            else
             {
-                std::cout << "Type: int";
+                std::cout << "int";
             }
         }
     }

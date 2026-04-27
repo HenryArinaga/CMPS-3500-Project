@@ -13,24 +13,23 @@ case "$cmd" in
 
     if [ "$2" == "procedural" ]; then
 
-        if [ ! -f "./cpp_interpreter" ]; then
-            g++ ./procedural/*.cpp -o ./cpp_interpreter
+        if [ ! -f "./procedural/cpp_interpreter" ]; then
+            g++ ./procedural/*.cpp -o ./procedural/cpp_interpreter
         fi
 
-        output=$(./cpp_interpreter "$file") # run: cpp_interpreter <file_name.scm>
+        mapfile -t lines < <(./procedural/cpp_interpreter "$file") # run: cpp_interpreter <path to file_name.scm>
+        result="${lines[0]:-}"
+        type="${lines[1]:-}"
 
         echo "Implementation: ${impl}"
         echo "Case: ${file}"
         echo "Status: OK"        # <------- Status is always OK for now
-        echo "Result: ${output}"
-        #echo "Type: -----"   # <----- CHANGE TYPE, maybe use a variable.
-        
+        echo "Result: ${result}"
+        echo "Type: ${type}"
+
         #implement error messages (later)
         #echo "Error: NOT_IMPLEMENTED"
 
-        if [ -f "./cpp_interpreter" ]; then
-            rm cpp_interpreter
-        fi
     fi
     ;;
   *)
