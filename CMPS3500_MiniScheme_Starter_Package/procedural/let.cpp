@@ -63,26 +63,51 @@ std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
 
     int i = 1;
 
-    if (expr[i] != "(") return "ERROR";
+    if (i >= (int)expr.size() || expr[i] != "(") return "PARSE_ERROR";
     i++;
 
-    while (expr[i] == "(")
+    while (i < (int)expr.size() && expr[i] == "(")
     {
         i++;
+
+        if (i >= (int)expr.size())
+        {
+            exitScope(new_scope);
+            return "PARSE_ERROR";
+        }
 
         std::string var = expr[i];
         i++;
 
         std::vector<std::string> value_expr = extractLetValue(expr, i);
 
+        if (value_expr.empty() || i >= (int)expr.size())
+        {
+            exitScope(new_scope);
+            return "PARSE_ERROR";
+        }
+
         i++;
 
         std::string value = evaluate(value_expr, scope);
+        if (value == "PARSE_ERROR" ||
+            value == "UNDECLARED_IDENTIFIER" ||
+            value == "WRONG_ARITY" ||
+            value == "TYPE_MISMATCH" ||
+            value == "DIVISION_BY_ZERO")
+        {
+            exitScope(new_scope);
+            return value;
+        }
         addScopeEntry(new_scope, var, value);
     }
 
     
-    if (expr[i] != ")") return "ERROR";
+    if (i >= (int)expr.size() || expr[i] != ")")
+    {
+        exitScope(new_scope);
+        return "PARSE_ERROR";
+    }
     i++;
 
     std::vector<std::string> body;

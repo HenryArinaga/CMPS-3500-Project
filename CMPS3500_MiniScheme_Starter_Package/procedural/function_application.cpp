@@ -9,8 +9,46 @@
 #include "evaluate.h"
 #include "scope.h"
 #include "lambda.h"
-#include <iostream>
 #include <cctype>
+
+static bool isErrorValue(const std::string& value)
+{
+    return value == "PARSE_ERROR" ||
+           value == "UNDECLARED_IDENTIFIER" ||
+           value == "WRONG_ARITY" ||
+           value == "TYPE_MISMATCH" ||
+           value == "DIVISION_BY_ZERO";
+}
+
+static bool isIntegerLiteral(const std::string& token)
+{
+    if (token.empty())
+    {
+        return false;
+    }
+
+    int start = 0;
+
+    if (token[0] == '-')
+    {
+        if (token.size() == 1)
+        {
+            return false;
+        }
+
+        start = 1;
+    }
+
+    for (int i = start; i < (int)token.size(); i++)
+    {
+        if (!isdigit(token[i]))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 static std::vector<std::string> extractPart(
     const std::vector<std::string>& expr,
@@ -59,30 +97,59 @@ static std::vector<std::string> extractPart(
 }
 
 // Resolves a token to an integer value
-// looking up variables in the scope if necessary
-static int resolveValue(const std::string& token, Scope* scope)
+static bool resolveValue(
+    const std::string& token,
+    Scope* scope,
+    int& result,
+    std::string& error
+)
 {
-    std::string val = token;
+    std::string value = token;
 
-    if (!isdigit(val[0]) && val[0] != '-')
+    if (!isIntegerLiteral(value))
     {
-        val = lookupScopeEntry(scope, val);
+        if (value == "#t" || value == "#f")
+        {
+            error = "TYPE_MISMATCH";
+            return false;
+        }
+
+        value = lookupScopeEntry(scope, value);
+
+        if (value == "NOT FOUND")
+        {
+            error = "UNDECLARED_IDENTIFIER";
+            return false;
+        }
+
+        if (!isIntegerLiteral(value))
+        {
+            error = "TYPE_MISMATCH";
+            return false;
+        }
     }
 
-    return std::stoi(val);
+    result = std::stoi(value);
+    return true;
 }
 
-static int resolveExpressionValue(
+static bool resolveExpressionValue(
     const std::vector<std::string>& expr,
     int& i,
-    Scope* scope
+    Scope* scope,
+    int& result,
+    std::string& error
 )
 {
     if (expr[i] != "(")
     {
-        int value = resolveValue(expr[i], scope);
+        if (!resolveValue(expr[i], scope, result, error))
+        {
+            return false;
+        }
+
         i++;
-        return value;
+        return true;
     }
 
     std::vector<std::string> nested_expr;
@@ -110,7 +177,22 @@ static int resolveExpressionValue(
         i++;
     }
 
-    return std::stoi(evaluate(nested_expr, scope));
+    std::string value = evaluate(nested_expr, scope);
+
+    if (isErrorValue(value))
+    {
+        error = value;
+        return false;
+    }
+
+    if (!isIntegerLiteral(value))
+    {
+        error = "TYPE_MISMATCH";
+        return false;
+    }
+
+    result = std::stoi(value);
+    return true;
 }
 // Handles function application for built-in functions like +, -, *, /
 std::string handleFunctionApplication(
@@ -131,6 +213,10 @@ std::string handleFunctionApplication(
         }
 
         std::string lambda_value = evaluate(lambda_expr, scope);
+        if (isErrorValue(lambda_value))
+        {
+            return lambda_value;
+        }
         return applyLambdaValue(lambda_value, arguments, scope);
     }
 
@@ -156,10 +242,17 @@ std::string handleFunctionApplication(
 
         for (int i = 1; i < (int)expr.size();)
         {
-            result += resolveExpressionValue(expr, i, scope);
+            int value = 0;
+            std::string error;
+
+            if (!resolveExpressionValue(expr, i, scope, value, error))
+            {
+                return error;
+            }
+
+            result += value;
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
     // Implement other operations similarly
@@ -167,18 +260,30 @@ std::string handleFunctionApplication(
     {
         if (expr.size() < 2)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int result = resolveExpressionValue(expr, i, scope);
+        int result = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, result, error))
+        {
+            return error;
+        }
 
         for (; i < (int)expr.size();)
         {
-            result -= resolveExpressionValue(expr, i, scope);
+            int value = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, value, error))
+            {
+                return error;
+            }
+
+            result -= value;
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
     
@@ -188,10 +293,17 @@ std::string handleFunctionApplication(
 
         for (int i = 1; i < (int)expr.size();)
         {
-            result *= resolveExpressionValue(expr, i, scope);
+            int value = 0;
+            std::string error;
+
+            if (!resolveExpressionValue(expr, i, scope, value, error))
+            {
+                return error;
+            }
+
+            result *= value;
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
 
@@ -199,159 +311,212 @@ std::string handleFunctionApplication(
     {
         if (expr.size() < 2)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int result = resolveExpressionValue(expr, i, scope);
+        int result = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, result, error))
+        {
+            return error;
+        }
 
         for (; i < (int)expr.size();)
         {
-            int divisor = resolveExpressionValue(expr, i, scope);
+            int divisor = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, divisor, error))
+            {
+                return error;
+            }
 
             if (divisor == 0)
             {
-                std::cout << "ERROR: division by zero\n";
-                return "ERROR";
+                return "DIVISION_BY_ZERO";
             }
 
             result /= divisor;
         }
 
-        std::cout << result << "\n";
         return std::to_string(result);
     }
     else if (op == "=")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int left = resolveExpressionValue(expr, i, scope);
+        int left = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
 
         while (i < (int)expr.size())
         {
-            int right = resolveExpressionValue(expr, i, scope);
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
 
             if (left != right)
             {
-                std::cout << "#f\n";
                 return "#f";
             }
 
             left = right;
         }
 
-        std::cout << "#t\n";
         return "#t";
     }
     else if (op == "<")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int left = resolveExpressionValue(expr, i, scope);
+        int left = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
 
         while (i < (int)expr.size())
         {
-            int right = resolveExpressionValue(expr, i, scope);
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
 
             if (!(left < right))
             {
-                std::cout << "#f\n";
                 return "#f";
             }
 
             left = right;
         }
 
-        std::cout << "#t\n";
         return "#t";
     }
     else if (op == ">")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int left = resolveExpressionValue(expr, i, scope);
+        int left = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
 
         while (i < (int)expr.size())
         {
-            int right = resolveExpressionValue(expr, i, scope);
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
 
             if (!(left > right))
             {
-                std::cout << "#f\n";
                 return "#f";
             }
 
             left = right;
         }
 
-        std::cout << "#t\n";
         return "#t";
     }
     else if (op == "<=")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int left = resolveExpressionValue(expr, i, scope);
+        int left = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
 
         while (i < (int)expr.size())
         {
-            int right = resolveExpressionValue(expr, i, scope);
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
 
             if (!(left <= right))
             {
-                std::cout << "#f\n";
                 return "#f";
             }
 
             left = right;
         }
 
-        std::cout << "#t\n";
         return "#t";
     }
     else if (op == ">=")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int left = resolveExpressionValue(expr, i, scope);
+        int left = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
 
         while (i < (int)expr.size())
         {
-            int right = resolveExpressionValue(expr, i, scope);
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
 
             if (!(left >= right))
             {
-                std::cout << "#f\n";
                 return "#f";
             }
 
             left = right;
         }
 
-        std::cout << "#t\n";
         return "#t";
     }
     //unknown function if we get here
-    std::cout << "Unknown function: " << op << "\n";
-    return "UNKNOWN_FUNCTION";
+    return "UNDECLARED_IDENTIFIER";
 }

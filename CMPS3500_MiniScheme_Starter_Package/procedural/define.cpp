@@ -53,8 +53,7 @@ std::string handleDefine(const std::vector<std::string>& expr, Scope* scope)
 {
     if (expr.size() < 3)
     {
-        std::cout << "Error: invalid define expression\n";
-        return "ERROR";
+        return "PARSE_ERROR";
     }
 
     std::string name = expr[1];
@@ -63,8 +62,7 @@ std::string handleDefine(const std::vector<std::string>& expr, Scope* scope)
 
     if (name == "(" || name == ")" || value_expr.empty() || i != (int)expr.size())
     {
-        std::cout << "Error: invalid define expression\n";
-        return "ERROR";
+        return "PARSE_ERROR";
     }
 
     if (isRecursiveDefinition(value_expr))
@@ -73,6 +71,14 @@ std::string handleDefine(const std::vector<std::string>& expr, Scope* scope)
     }
 
     std::string value = evaluate(value_expr, scope);
+    if (value == "PARSE_ERROR" ||
+        value == "UNDECLARED_IDENTIFIER" ||
+        value == "WRONG_ARITY" ||
+        value == "TYPE_MISMATCH" ||
+        value == "DIVISION_BY_ZERO")
+    {
+        return value;
+    }
     addScopeEntry(scope, name, value);
     return "";
 }

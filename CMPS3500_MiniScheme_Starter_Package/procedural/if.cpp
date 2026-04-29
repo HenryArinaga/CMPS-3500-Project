@@ -88,22 +88,29 @@ std::string handleIf(const std::vector<std::string>& expr, Scope* scope)
         i != (int)expr.size()
     )
     {
-        std::cout << "Error: invalid if expression\n";
-        return "";
+        return "PARSE_ERROR";
     }
 
     std::string cond_value = evaluateIfPart(condition, scope);
 
+    if (cond_value == "PARSE_ERROR" ||
+        cond_value == "UNDECLARED_IDENTIFIER" ||
+        cond_value == "WRONG_ARITY" ||
+        cond_value == "TYPE_MISMATCH" ||
+        cond_value == "DIVISION_BY_ZERO")
+    {
+        return cond_value;
+    }
+
     if (cond_value == "#t")
     {
-        std::string result = evaluateIfPart(true_branch, scope);
-        std::cout << result << "\n";
-        return result;
+        return evaluateIfPart(true_branch, scope);
     }
-    else
+
+    if (cond_value == "#f")
     {
-        std::string result = evaluateIfPart(false_branch, scope);
-        std::cout << result << "\n";
-        return result;
+        return evaluateIfPart(false_branch, scope);
     }
+
+    return "TYPE_MISMATCH";
 }

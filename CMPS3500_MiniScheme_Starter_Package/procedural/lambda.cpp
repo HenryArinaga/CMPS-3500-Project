@@ -83,12 +83,12 @@ std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
 
     if (expr.size() < 5)
     {
-        return "ERROR";
+        return "PARSE_ERROR";
     }
 
     if (expr[1] != "(")
     {
-        return "ERROR";
+        return "PARSE_ERROR";
     }
 
     int i = 2;
@@ -98,7 +98,7 @@ std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
     {
         if (expr[i] == "(")
         {
-            return "ERROR";
+            return "PARSE_ERROR";
         }
 
         params.push_back(expr[i]);
@@ -107,14 +107,14 @@ std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
 
     if (i >= (int)expr.size() || expr[i] != ")")
     {
-        return "ERROR";
+        return "PARSE_ERROR";
     }
 
     i++;
 
     if (i >= (int)expr.size())
     {
-        return "ERROR";
+        return "PARSE_ERROR";
     }
 
     std::string param_text;
@@ -133,7 +133,7 @@ std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
 
     if (body_text.empty())
     {
-        return "ERROR";
+        return "PARSE_ERROR";
     }
 
     return "LAMBDA|" + param_text + "|" + body_text;
@@ -152,14 +152,14 @@ std::string applyLambdaValue(
 {
     if (!isLambdaValue(lambda_value))
     {
-        return "ERROR";
+        return "TYPE_MISMATCH";
     }
 
     std::vector<std::string> parts = splitString(lambda_value, '|');
 
     if (parts.size() != 3)
     {
-        return "ERROR";
+        return "TYPE_MISMATCH";
     }
 
     std::vector<std::string> params;
@@ -171,7 +171,7 @@ std::string applyLambdaValue(
 
     if ((int)params.size() != (int)arguments.size())
     {
-        return "ERROR";
+        return "WRONG_ARITY";
     }
 
     Scope* lambda_scope = enterScope(scope);
@@ -179,6 +179,15 @@ std::string applyLambdaValue(
     for (int i = 0; i < (int)params.size(); i++)
     {
         std::string value = evaluate(arguments[i], scope);
+        if (value == "PARSE_ERROR" ||
+            value == "UNDECLARED_IDENTIFIER" ||
+            value == "WRONG_ARITY" ||
+            value == "TYPE_MISMATCH" ||
+            value == "DIVISION_BY_ZERO")
+        {
+            exitScope(lambda_scope);
+            return value;
+        }
         addScopeEntry(lambda_scope, params[i], value);
     }
 
