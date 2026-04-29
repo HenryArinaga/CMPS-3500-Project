@@ -144,6 +144,136 @@ std::string handleFunctionApplication(
         std::cout << result << "\n";
         return std::to_string(result);
     }
+    else if (op == "=")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        int left = resolveExpressionValue(expr, i, scope);
+
+        while (i < (int)expr.size())
+        {
+            int right = resolveExpressionValue(expr, i, scope);
+
+            if (left != right)
+            {
+                std::cout << "#f\n";
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        std::cout << "#t\n";
+        return "#t";
+    }
+    else if (op == "<")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        int left = resolveExpressionValue(expr, i, scope);
+
+        while (i < (int)expr.size())
+        {
+            int right = resolveExpressionValue(expr, i, scope);
+
+            if (!(left < right))
+            {
+                std::cout << "#f\n";
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        std::cout << "#t\n";
+        return "#t";
+    }
+    else if (op == ">")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        int left = resolveExpressionValue(expr, i, scope);
+
+        while (i < (int)expr.size())
+        {
+            int right = resolveExpressionValue(expr, i, scope);
+
+            if (!(left > right))
+            {
+                std::cout << "#f\n";
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        std::cout << "#t\n";
+        return "#t";
+    }
+    else if (op == "<=")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        int left = resolveExpressionValue(expr, i, scope);
+
+        while (i < (int)expr.size())
+        {
+            int right = resolveExpressionValue(expr, i, scope);
+
+            if (!(left <= right))
+            {
+                std::cout << "#f\n";
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        std::cout << "#t\n";
+        return "#t";
+    }
+    else if (op == ">=")
+    {
+        if (expr.size() < 3)
+        {
+            return "ERROR";
+        }
+
+        int i = 1;
+        int left = resolveExpressionValue(expr, i, scope);
+
+        while (i < (int)expr.size())
+        {
+            int right = resolveExpressionValue(expr, i, scope);
+
+            if (!(left >= right))
+            {
+                std::cout << "#f\n";
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        std::cout << "#t\n";
+        return "#t";
+    }
     //unknown function if we get here
     std::cout << "Unknown function: " << op << "\n";
     return "UNKNOWN_FUNCTION";

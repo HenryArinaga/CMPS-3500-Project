@@ -47,6 +47,11 @@ std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
     {
         if (parsed.size() == 1)
         {
+            if (parsed[0] == "#t" || parsed[0] == "#f")
+            {
+                return parsed[0];
+            }
+
             bool is_number = true;
             int start = 0;
 
