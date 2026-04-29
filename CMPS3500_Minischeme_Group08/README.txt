@@ -1,19 +1,12 @@
-CMPS 3500 MiniScheme Starter Package
+run_all.sh usage:
 
-This starter package provides infrastructure only.
-It does not include a parser, evaluator, environment model, recursion support, or cond implementation.
+use this command to test our current cpp interpreter:
+./run_all.sh run-case procedural tests/public/<any .scm file from checkpoint 2>
 
-Included:
-- required folder structure
-- run_all.sh skeleton
-- placeholder implementation folders
-- public test folder layout
-- tiny file-loading helper stubs
+using "oop" instead of "procedural" will show that our java interpreter is
+currently being worked on:
+./run_all.sh run-case oop tests/public/<any .scm file from checkpoint 2>
 
-
-PARSER/READER
-
-to change target file run program as normal and change
-cmd line argument as follows:
-                ./[compiled name] [name].scm
-
+Note: Since we are only 3 students in our group, we were allowed to work on 2
+paradigms only instead of all 3. We decided to skip the functional paradigm for
+our project, which is why we only have a stub file in that folder.
