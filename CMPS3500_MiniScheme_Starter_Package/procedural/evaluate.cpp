@@ -12,6 +12,7 @@
 #include <iostream>
 #include "function_application.h"
 #include "let.h"
+#include "define.h"
 
 // Evaluates a single expression
 std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
@@ -36,8 +37,7 @@ std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
     }
     else if (op == "define")
     {
-        // handle_define(parsed, scope);
-        return "";
+        return handleDefine(parsed, scope);
     }
     else if (op == "let")
     {
