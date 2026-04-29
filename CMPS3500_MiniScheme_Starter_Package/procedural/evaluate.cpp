@@ -13,6 +13,7 @@
 #include "function_application.h"
 #include "let.h"
 #include "define.h"
+#include "lambda.h"
 
 // Evaluates a single expression
 std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
@@ -42,6 +43,10 @@ std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
     else if (op == "let")
     {
         return handleLet(parsed, scope);
+    }
+    else if (op == "lambda")
+    {
+        return handleLambda(parsed, scope);
     }
     else
     {

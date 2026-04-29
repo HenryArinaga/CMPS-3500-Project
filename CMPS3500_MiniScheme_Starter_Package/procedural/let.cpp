@@ -10,6 +10,52 @@
 #include "evaluate.h"
 #include "scope.h"
 
+static std::vector<std::string> extractLetValue(
+    const std::vector<std::string>& expr,
+    int& i
+)
+{
+    std::vector<std::string> value_expr;
+
+    if (i >= (int)expr.size())
+    {
+        return value_expr;
+    }
+
+    if (expr[i] != "(")
+    {
+        value_expr.push_back(expr[i]);
+        i++;
+        return value_expr;
+    }
+
+    int depth = 0;
+
+    while (i < (int)expr.size())
+    {
+        value_expr.push_back(expr[i]);
+
+        if (expr[i] == "(")
+        {
+            depth++;
+        }
+        else if (expr[i] == ")")
+        {
+            depth--;
+
+            if (depth == 0)
+            {
+                i++;
+                break;
+            }
+        }
+
+        i++;
+    }
+
+    return value_expr;
+}
+
 // Handles the built-in let expression
 std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
 {
@@ -27,13 +73,7 @@ std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
         std::string var = expr[i];
         i++;
 
-        std::vector<std::string> value_expr;
-
-        while (expr[i] != ")")
-        {
-            value_expr.push_back(expr[i]);
-            i++;
-        }
+        std::vector<std::string> value_expr = extractLetValue(expr, i);
 
         i++;
 

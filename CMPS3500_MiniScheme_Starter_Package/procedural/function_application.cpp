@@ -8,8 +8,55 @@
 #include "function_application.h"
 #include "evaluate.h"
 #include "scope.h"
+#include "lambda.h"
 #include <iostream>
 #include <cctype>
+
+static std::vector<std::string> extractPart(
+    const std::vector<std::string>& expr,
+    int& i
+)
+{
+    std::vector<std::string> part;
+
+    if (i >= (int)expr.size())
+    {
+        return part;
+    }
+
+    if (expr[i] != "(")
+    {
+        part.push_back(expr[i]);
+        i++;
+        return part;
+    }
+
+    int depth = 0;
+
+    while (i < (int)expr.size())
+    {
+        part.push_back(expr[i]);
+
+        if (expr[i] == "(")
+        {
+            depth++;
+        }
+        else if (expr[i] == ")")
+        {
+            depth--;
+
+            if (depth == 0)
+            {
+                i++;
+                break;
+            }
+        }
+
+        i++;
+    }
+
+    return part;
+}
 
 // Resolves a token to an integer value
 // looking up variables in the scope if necessary
@@ -72,6 +119,36 @@ std::string handleFunctionApplication(
 )
 {
     std::string op = expr[0];
+    if (op == "(")
+    {
+        int i = 0;
+        std::vector<std::string> lambda_expr = extractPart(expr, i);
+        std::vector<std::vector<std::string>> arguments;
+
+        while (i < (int)expr.size())
+        {
+            arguments.push_back(extractPart(expr, i));
+        }
+
+        std::string lambda_value = evaluate(lambda_expr, scope);
+        return applyLambdaValue(lambda_value, arguments, scope);
+    }
+
+    std::string lambda_value = lookupScopeEntry(scope, op);
+
+    if (isLambdaValue(lambda_value))
+    {
+        int i = 1;
+        std::vector<std::vector<std::string>> arguments;
+
+        while (i < (int)expr.size())
+        {
+            arguments.push_back(extractPart(expr, i));
+        }
+
+        return applyLambdaValue(lambda_value, arguments, scope);
+    }
+
     // Handle built-in functions
     if (op == "+")
     {
