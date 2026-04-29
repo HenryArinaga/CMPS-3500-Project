@@ -31,6 +31,14 @@ case "$cmd" in
         #echo "Error: NOT_IMPLEMENTED"
 
     fi
+
+    if [ "$2" == "oop" ]; then
+        echo "Implementation: ${impl}"
+        echo "Case: ${file}"
+        echo "Status: Work in progress"
+        echo "Result: Work in progress"
+        echo "Type: Work in progress"
+    fi
     ;;
   *)
     echo "Usage: ./run_all.sh {list-cases|run-case <implementation> <file>|compare-case <file>}"
