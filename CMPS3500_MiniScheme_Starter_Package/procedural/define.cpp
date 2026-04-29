@@ -1,5 +1,6 @@
 #include "define.h"
 #include "evaluate.h"
+#include "recursion.h"
 #include <iostream>
 
 static std::vector<std::string> extractDefineValue(
@@ -64,6 +65,11 @@ std::string handleDefine(const std::vector<std::string>& expr, Scope* scope)
     {
         std::cout << "Error: invalid define expression\n";
         return "ERROR";
+    }
+
+    if (isRecursiveDefinition(value_expr))
+    {
+        return handleRecursiveDefine(name, value_expr, scope);
     }
 
     std::string value = evaluate(value_expr, scope);
