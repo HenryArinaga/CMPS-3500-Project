@@ -17,8 +17,9 @@ public class Main{
 
         String source = FileLoaderStub.readFile(args[0]);
         
-        List<String> tokens = Tokenizer.tokenize(source);
-        List<List<String>> expressions = Parser.splitExpressions(tokens);
+        Tokenizer tokenizer = new Tokenizer(source);
+        Parser parser = new Parser(tokenizer.tokenize());
+        List<List<String>> expressions = parser.splitExpressions();
 
         for(List<String> expression : expressions){
             List<String> parsed = Parser.parseTokens(expression);

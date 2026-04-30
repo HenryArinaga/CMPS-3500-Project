@@ -9,7 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tokenizer {
-    public static List<String> tokenize(String sourceCode){
+    private String sourceCode;
+
+    public Tokenizer(String sourceCode) {
+        this.sourceCode = sourceCode;
+    }
+
+    public List<String> tokenize(){
         List<String> tokenList = new ArrayList<String>();
         String current = "";
 
@@ -24,7 +30,7 @@ public class Tokenizer {
                 tokenList.add(String.valueOf(c));
             }
             else if(Character.isWhitespace(c)){
-                if(current.isEmpty()){
+                if(!current.isEmpty()){
                     tokenList.add(current);
                     current = "";
                 }

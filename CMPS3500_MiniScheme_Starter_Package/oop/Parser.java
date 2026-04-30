@@ -10,6 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
+    private List<String> tokens;
+
+    public Parser(List<String> tokens) {
+        this.tokens = tokens;
+    }
+    
     public static List<String> parseTokens(List<String> inputTokens){
         List<String> parsedTokens = new ArrayList<>();
 
@@ -33,13 +39,12 @@ public class Parser {
         return parsedTokens;
     }
 
-    public static List<List<String>> splitExpressions(List<String> tokens){
+    public List<List<String>> splitExpressions(){
         List<List<String>> expressions = new ArrayList<>();
         List<String> current = new ArrayList<>();
         int depth = 0;
-        int i;
 
-        for(i = 0; i < tokens.size(); i++){
+        for(int i = 0; i < tokens.size(); i++){
             if(tokens.get(i).equals("(")){
                 if(depth == 0){
                     current.clear();
