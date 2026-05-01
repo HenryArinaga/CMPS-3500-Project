@@ -12,7 +12,9 @@
 #include <iostream>
 #include "function_application.h"
 #include "let.h"
+#include "define.h"
 #include "lambda.h"
+#include "cond.h"
 
 // Evaluates a single expression
 std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
@@ -26,7 +28,12 @@ std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
 
     if (parsed.empty())
     {
-        return "";
+        return "PARSE_ERROR";
+    }
+
+    if (parsed.size() == 1 && parsed[0] == "PARSE_ERROR")
+    {
+        return "PARSE_ERROR";
     }
 
     std::string op = parsed[0];
@@ -37,8 +44,7 @@ std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
     }
     else if (op == "define")
     {
-        // handle_define(parsed, scope);
-        return "";
+        return handleDefine(parsed, scope);
     }
     else if (op == "let")
     {
@@ -47,6 +53,10 @@ std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
     else if (op == "lambda")
     {
         return handleLambda(parsed, scope);
+    }
+    else if (op == "cond")
+    {
+        return handleCond(parsed, scope);
     }
     else
     {
@@ -80,6 +90,11 @@ std::string evaluate(const std::vector<std::string> &expr, Scope *scope)
 
             // variable lookup
             std::string value = lookupScopeEntry(scope, op);
+            if (value == "NOT FOUND")
+            {
+                return "UNDECLARED_IDENTIFIER";
+            }
+
             return value;
         }
         else

@@ -11,15 +11,12 @@
 #include <string>
 #include <vector>
 
-struct LambdaClosure;
-
 // Represents a single entry in a scope
 //mapping a name to a value
 struct ScopeEntry
 {
     std::string name;
     std::string value;
-    LambdaClosure* lambda;
 };
 
 //a scope contains a list of entries 

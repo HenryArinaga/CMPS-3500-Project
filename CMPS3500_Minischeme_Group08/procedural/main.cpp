@@ -20,27 +20,28 @@ int main(int argc, char *argv[])
 {
     std::string result = "";
 
+    //std::string file_path = std::string("../tests/public/") + argv[1];
     std::string file_path = argv[1];
 
-    // ---- whole process starts here ----
-
-    // Step 1: Get source code from file.
     std::string source = read_file(file_path);
 
-    // Step 2: turn that source code into TOKENS
     auto tokens = tokenize(source);
 
-    // Step 3: Turn tokens into separate expressions.
-    //         each expression has a depth level, and
-    //         it can have one or multiple tokens
     auto expressions = splitExpressions(tokens);
-    //                 splitExpressions() is found in parser.cpp
 
-    //Step 4: Deal with SCOPE
-    // Start by defining global scope
     Scope* global = enterScope(NULL);
 
-    // Step 5: EVALUATE every expression found in the list of epxressions
+    // for (const auto& expr : expressions)
+    // {
+    //     result = evaluate(expr, global);
+
+    //     if (!result.empty())
+    //     {
+    //         std::cout << result << "\n";
+    //     }
+    // }
+
+
     for (const auto& expr : expressions)
     {
         result = evaluate(expr, global);
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
         if (!result.empty())
         {
             std::cout << result << "\n";
+
             if (result == "#t" || result == "#f")
             {
                 std::cout << "bool";
@@ -58,6 +60,8 @@ int main(int argc, char *argv[])
             }
         }
     }
+
+
 
     exitScope(global);
     return 0;
