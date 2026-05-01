@@ -21,11 +21,20 @@ case "$cmd" in
         result="${lines[0]:-}"
         type="${lines[1]:-}"
 
-        echo "Implementation: ${impl}"
-        echo "Case: ${file}"
-        echo "Status: OK"        # <------- Status is always OK for now
-        echo "Result: ${result}"
-        echo "Type: ${type}"
+        if [ "$type" == "ERROR" ]; then
+          echo "Implementation: ${impl}"
+          echo "Case: ${file}"
+          echo "Status: ERROR"
+          echo "Error: ${result}"
+        fi
+
+        if [ ! "$type" == "ERROR" ]; then
+          echo "Implementation: ${impl}"
+          echo "Case: ${file}"
+          echo "Status: OK"
+          echo "Result: ${result}"
+          echo "Type: ${type}"
+        fi
 
         #implement error messages (later)
         #echo "Error: NOT_IMPLEMENTED"
