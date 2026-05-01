@@ -14,8 +14,7 @@ public class Evaluate {
       return "";
     }
 
-    Parser parser = new Parser(expression);
-    List<String> parsed = parser.parseTokens(expression);
+    List<String> parsed = Parser.parseTokens(expression);
 
     if(parsed.isEmpty()){
       return "PARSE_ERROR";
