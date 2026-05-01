@@ -15,18 +15,26 @@ public class Main{
             return;
         }
 
+        String result = "";
         String source = FileLoaderStub.readFile(args[0]);
         
         Tokenizer tokenizer = new Tokenizer(source);
         Parser parser = new Parser(tokenizer.tokenize());
         List<List<String>> expressions = parser.splitExpressions();
+        Scope global = new Scope(null);
 
         for(List<String> expression : expressions){
-            List<String> parsed = Parser.parseTokens(expression);
-
-            System.out.println("Expression: " + expression);
-            System.out.println("Parsed:     " + parsed);
+            result = Evaluate.evaluate(expression, global);
+            
+            if(!result.isEmpty()){
+                System.out.println(result);
+                if(result.equals("#t") || result.equals("#f")){
+                    System.out.println("bool");
+                }
+                else {
+                    System.out.println("int");
+                }
+            }
         }
-        
     }
 }

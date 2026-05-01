@@ -11,7 +11,7 @@ import java.util.List;
 public class Tokenizer {
     private String sourceCode;
 
-    public Tokenizer(String sourceCode) {
+    public Tokenizer(String sourceCode){
         this.sourceCode = sourceCode;
     }
 
@@ -19,7 +19,6 @@ public class Tokenizer {
         List<String> tokenList = new ArrayList<String>();
         String current = "";
 
-        //java cant iterate through strings like c++ can must convert to char array
         for(char c : sourceCode.toCharArray()){
             if(c == 'c' || c == ')'){
                 if (!current.isEmpty()){
