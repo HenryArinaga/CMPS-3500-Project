@@ -84,11 +84,15 @@ static std::string evaluateIfPart(
 std::string handleIf(const std::vector<std::string> &expr, Scope *scope)
 {
     int i = 1;
+    // Extract the condition, true branch, and false 
+    // branch parts of the if expression
     std::vector<std::string> condition = extractIfPart(expr, i);
     std::vector<std::string> true_branch = extractIfPart(expr, i);
     std::vector<std::string> false_branch = extractIfPart(expr, i);
 
     if (
+        // check for parse errors, condition, true branch, 
+        // and false branch cannot be empty
         condition.empty() ||
         true_branch.empty() ||
         false_branch.empty() ||
@@ -108,6 +112,7 @@ std::string handleIf(const std::vector<std::string> &expr, Scope *scope)
         return cond_value;
     }
 
+    // check for true or false depending on the value of the condition expression
     if (cond_value == "#t")
     {
         return evaluateIfPart(true_branch, scope);
