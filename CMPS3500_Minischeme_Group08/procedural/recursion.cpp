@@ -1,3 +1,10 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 3                                   /
+  / ORGN: CSUB - CMPS 3500                               /
+  / FILE: recursion.cpp                                  /
+  / DATE: 05/1/2026                                      / 
+*/
 #include "recursion.h"
 #include "evaluate.h"
 #include "scope.h"

@@ -1,3 +1,11 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 3                                   /
+  / ORGN: CSUB - CMPS 3500                               /
+  / FILE: cond.h                                         /
+  / DATE: 05/1/2026                                      / 
+*/
+
 #ifndef COND_H
 #define COND_H
 
