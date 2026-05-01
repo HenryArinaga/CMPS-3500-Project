@@ -27,19 +27,19 @@ public class Evaluate {
 
     String op = parsed.get(0);
 
-    // if(op.equals(op == "if")){
-    //   return handleIf(parsed, scope);
-    // }
-    // if(op.equals(op == "if")){
+    if(op.equals("if")){
+       return If.handleIf(parsed, scope);
+    }
+    // if(op.equals("define")){
     //   return handleDefine(parsed, scope);
     // }
-    // if(op.equals(op == "if")){
+    // if(op.equals("let")){
     //   return handleLet(parsed, scope);
     // }
-    // if(op.equals(op == "if")){
+    // if(op.equals("lambda")){
     //   return handleLambda(parsed, scope);
     // }
-    // if(op.equals(op == "if")){
+    // if(op.equals("cond")){
     //   return handleCond(parsed, scope);
     // }
     // else{
