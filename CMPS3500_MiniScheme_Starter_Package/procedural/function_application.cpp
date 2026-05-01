@@ -7,36 +7,149 @@
 */
 #include "function_application.h"
 #include "evaluate.h"
-#include "parser.h"
 #include "scope.h"
-#include <iostream>
+#include "lambda.h"
 #include <cctype>
 
-// Resolves a token to an integer value
-// looking up variables in the scope if necessary
-static int resolveValue(const std::string& token, Scope* scope)
+static bool isErrorValue(const std::string& value)
 {
-    std::string val = token;
-
-    if (!isdigit(val[0]) && val[0] != '-')
-    {
-        val = lookupScopeEntry(scope, val);
-    }
-
-    return std::stoi(val);
+    return value == "PARSE_ERROR" ||
+           value == "UNDECLARED_IDENTIFIER" ||
+           value == "WRONG_ARITY" ||
+           value == "TYPE_MISMATCH" ||
+           value == "DIVISION_BY_ZERO";
 }
 
-static int resolveExpressionValue(
+static bool isIntegerLiteral(const std::string& token)
+{
+    if (token.empty())
+    {
+        return false;
+    }
+
+    int start = 0;
+
+    if (token[0] == '-')
+    {
+        if (token.size() == 1)
+        {
+            return false;
+        }
+
+        start = 1;
+    }
+
+    for (int i = start; i < (int)token.size(); i++)
+    {
+        if (!isdigit(token[i]))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static std::vector<std::string> extractPart(
+    const std::vector<std::string>& expr,
+    int& i
+)
+{
+    std::vector<std::string> part;
+
+    if (i >= (int)expr.size())
+    {
+        return part;
+    }
+
+    if (expr[i] != "(")
+    {
+        part.push_back(expr[i]);
+        i++;
+        return part;
+    }
+
+    int depth = 0;
+
+    while (i < (int)expr.size())
+    {
+        part.push_back(expr[i]);
+
+        if (expr[i] == "(")
+        {
+            depth++;
+        }
+        else if (expr[i] == ")")
+        {
+            depth--;
+
+            if (depth == 0)
+            {
+                i++;
+                break;
+            }
+        }
+
+        i++;
+    }
+
+    return part;
+}
+
+// Resolves a token to an integer value
+static bool resolveValue(
+    const std::string& token,
+    Scope* scope,
+    int& result,
+    std::string& error
+)
+{
+    std::string value = token;
+
+    if (!isIntegerLiteral(value))
+    {
+        if (value == "#t" || value == "#f")
+        {
+            error = "TYPE_MISMATCH";
+            return false;
+        }
+
+        value = lookupScopeEntry(scope, value);
+
+        if (value == "NOT FOUND")
+        {
+            error = "UNDECLARED_IDENTIFIER";
+            return false;
+        }
+
+        if (!isIntegerLiteral(value))
+        {
+            error = "TYPE_MISMATCH";
+            return false;
+        }
+    }
+
+    result = std::stoi(value);
+    return true;
+}
+
+static bool resolveExpressionValue(
     const std::vector<std::string>& expr,
     int& i,
-    Scope* scope
+    Scope* scope,
+    int& result,
+    std::string& error
 )
 {
     if (expr[i] != "(")
     {
-        int value = resolveValue(expr[i], scope);
+        if (!resolveValue(expr[i], scope, result, error))
+        {
+            return false;
+        }
+
         i++;
-        return value;
+        return true;
     }
 
     std::vector<std::string> nested_expr;
@@ -64,7 +177,22 @@ static int resolveExpressionValue(
         i++;
     }
 
-    return std::stoi(evaluate(nested_expr, scope));
+    std::string value = evaluate(nested_expr, scope);
+
+    if (isErrorValue(value))
+    {
+        error = value;
+        return false;
+    }
+
+    if (!isIntegerLiteral(value))
+    {
+        error = "TYPE_MISMATCH";
+        return false;
+    }
+
+    result = std::stoi(value);
+    return true;
 }
 // Handles function application for built-in functions like +, -, *, /
 std::string handleFunctionApplication(
@@ -72,94 +200,40 @@ std::string handleFunctionApplication(
     Scope* scope
 )
 {
-    // Check if this is a lambda application
-    std::vector<std::vector<std::string>> parts = splitExpressions(expr);
-
-    if (!parts.empty())
+    std::string op = expr[0];
+    if (op == "(")
     {
-        std::string callee_value = evaluate(parts[0], scope);
+        int i = 0;
+        std::vector<std::string> lambda_expr = extractPart(expr, i);
+        std::vector<std::vector<std::string>> arguments;
 
-        if (callee_value.find("LAMBDA:") == 0)
+        while (i < (int)expr.size())
         {
-            Scope* new_scope = enterScope(scope);
-            std::string encoded = callee_value.substr(7);
-            size_t split = encoded.find(':');
-
-            if (split == std::string::npos)
-            {
-                exitScope(new_scope);
-                return "ERROR";
-            }
-
-            std::string params_text = encoded.substr(0, split);
-            std::string body_text = encoded.substr(split + 1);
-            std::vector<std::string> params;
-            std::string current_param;
-
-            for (char c : params_text)
-            {
-                if (c == ',')
-                {
-                    if (!current_param.empty())
-                    {
-                        params.push_back(current_param);
-                        current_param.clear();
-                    }
-                }
-                else
-                {
-                    current_param += c;
-                }
-            }
-
-            if (!current_param.empty())
-            {
-                params.push_back(current_param);
-            }
-
-            std::vector<std::string> body;
-            std::string current_body_token;
-
-            for (char c : body_text)
-            {
-                if (std::isspace(static_cast<unsigned char>(c)))
-                {
-                    if (!current_body_token.empty())
-                    {
-                        body.push_back(current_body_token);
-                        current_body_token.clear();
-                    }
-                }
-                else
-                {
-                    current_body_token += c;
-                }
-            }
-
-            if (!current_body_token.empty())
-            {
-                body.push_back(current_body_token);
-            }
-
-            if ((int)params.size() != (int)parts.size() - 1)
-            {
-                exitScope(new_scope);
-                return "ERROR";
-            }
-
-            for (int i = 1; i < (int)parts.size(); i++)
-            {
-                std::string arg = evaluate(parts[i], scope);
-                addScopeEntry(new_scope, params[i - 1], arg);
-            }
-
-            std::string result = evaluate(body, new_scope);
-            exitScope(new_scope);
-            return result;
+            arguments.push_back(extractPart(expr, i));
         }
+
+        std::string lambda_value = evaluate(lambda_expr, scope);
+        if (isErrorValue(lambda_value))
+        {
+            return lambda_value;
+        }
+        return applyLambdaValue(lambda_value, arguments, scope);
     }
 
-    std::string op = expr[0];
+    std::string lambda_value = lookupScopeEntry(scope, op);
+
+    if (isLambdaValue(lambda_value))
+    {
+        int i = 1;
+        std::vector<std::vector<std::string>> arguments;
+
+        while (i < (int)expr.size())
+        {
+            arguments.push_back(extractPart(expr, i));
+        }
+
+        return applyLambdaValue(lambda_value, arguments, scope);
+    }
 
     // Handle built-in functions
     if (op == "+")
@@ -168,7 +242,15 @@ std::string handleFunctionApplication(
 
         for (int i = 1; i < (int)expr.size();)
         {
-            result += resolveExpressionValue(expr, i, scope);
+            int value = 0;
+            std::string error;
+
+            if (!resolveExpressionValue(expr, i, scope, value, error))
+            {
+                return error;
+            }
+
+            result += value;
         }
 
         return std::to_string(result);
@@ -178,15 +260,28 @@ std::string handleFunctionApplication(
     {
         if (expr.size() < 2)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int result = resolveExpressionValue(expr, i, scope);
+        int result = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, result, error))
+        {
+            return error;
+        }
 
         for (; i < (int)expr.size();)
         {
-            result -= resolveExpressionValue(expr, i, scope);
+            int value = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, value, error))
+            {
+                return error;
+            }
+
+            result -= value;
         }
 
         return std::to_string(result);
@@ -198,7 +293,15 @@ std::string handleFunctionApplication(
 
         for (int i = 1; i < (int)expr.size();)
         {
-            result *= resolveExpressionValue(expr, i, scope);
+            int value = 0;
+            std::string error;
+
+            if (!resolveExpressionValue(expr, i, scope, value, error))
+            {
+                return error;
+            }
+
+            result *= value;
         }
 
         return std::to_string(result);
@@ -208,20 +311,30 @@ std::string handleFunctionApplication(
     {
         if (expr.size() < 2)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        int result = resolveExpressionValue(expr, i, scope);
+        int result = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, result, error))
+        {
+            return error;
+        }
 
         for (; i < (int)expr.size();)
         {
-            int divisor = resolveExpressionValue(expr, i, scope);
+            int divisor = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, divisor, error))
+            {
+                return error;
+            }
 
             if (divisor == 0)
             {
-                std::cout << "ERROR: division by zero\n";
-                return "ERROR";
+                return "DIVISION_BY_ZERO";
             }
 
             result /= divisor;
@@ -229,57 +342,181 @@ std::string handleFunctionApplication(
 
         return std::to_string(result);
     }
-
-    // comparison
     else if (op == "=")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        bool comparison =
-            resolveExpressionValue(expr, i, scope) ==
-            resolveExpressionValue(expr, i, scope);
-        std::string result = comparison ? "#t" : "#f";
+        int left = 0;
+        std::string error;
 
-        return result;
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
+
+        while (i < (int)expr.size())
+        {
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
+
+            if (left != right)
+            {
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        return "#t";
     }
-
     else if (op == "<")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        bool comparison =
-            resolveExpressionValue(expr, i, scope) <
-            resolveExpressionValue(expr, i, scope);
-        std::string result = comparison ? "#t" : "#f";
+        int left = 0;
+        std::string error;
 
-        return result;
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
+
+        while (i < (int)expr.size())
+        {
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
+
+            if (!(left < right))
+            {
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        return "#t";
     }
-
     else if (op == ">")
     {
         if (expr.size() < 3)
         {
-            return "ERROR";
+            return "WRONG_ARITY";
         }
 
         int i = 1;
-        bool comparison =
-            resolveExpressionValue(expr, i, scope) >
-            resolveExpressionValue(expr, i, scope);
-        std::string result = comparison ? "#t" : "#f";
+        int left = 0;
+        std::string error;
 
-        return result;
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
+
+        while (i < (int)expr.size())
+        {
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
+
+            if (!(left > right))
+            {
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        return "#t";
     }
+    else if (op == "<=")
+    {
+        if (expr.size() < 3)
+        {
+            return "WRONG_ARITY";
+        }
 
-    //unknown function 
-    std::cout << "Unknown function: " << op << "\n";
-    return "UNKNOWN_FUNCTION";
+        int i = 1;
+        int left = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
+
+        while (i < (int)expr.size())
+        {
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
+
+            if (!(left <= right))
+            {
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        return "#t";
+    }
+    else if (op == ">=")
+    {
+        if (expr.size() < 3)
+        {
+            return "WRONG_ARITY";
+        }
+
+        int i = 1;
+        int left = 0;
+        std::string error;
+
+        if (!resolveExpressionValue(expr, i, scope, left, error))
+        {
+            return error;
+        }
+
+        while (i < (int)expr.size())
+        {
+            int right = 0;
+
+            if (!resolveExpressionValue(expr, i, scope, right, error))
+            {
+                return error;
+            }
+
+            if (!(left >= right))
+            {
+                return "#f";
+            }
+
+            left = right;
+        }
+
+        return "#t";
+    }
+    //unknown function if we get here
+    return "UNDECLARED_IDENTIFIER";
 }

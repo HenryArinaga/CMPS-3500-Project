@@ -15,7 +15,7 @@ std::vector<std::string> tokenize(const std::string& source_code) {
 
     for (char c : source_code) {
 
-        // Option 1: the current character is a PARENTHESIS
+        // If we hit a parenthesis
         if (c == '(' || c == ')') {
 
             // Save current token if it exists
@@ -28,20 +28,16 @@ std::vector<std::string> tokenize(const std::string& source_code) {
             token_list.push_back(std::string(1, c));
         }
 
-        // Option 2: the current character is just WHITESPACE
+        // hit whitespace
         else if (std::isspace(c)) {
 
-            // if you have whitespace, then everything before it
-            // should be a single token stored in "current"
             if (!current.empty()) {
                 token_list.push_back(current);
                 current.clear();
             }
         }
 
-        // Option 3: you have a token that could be one or more
-        // characters long. Keep storing those characters in a single
-        // token
+        //  keep building the token
         else {
             current += c;
         }
