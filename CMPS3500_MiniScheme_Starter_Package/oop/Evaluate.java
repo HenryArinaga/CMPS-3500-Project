@@ -72,7 +72,7 @@ public class Evaluate {
         return value;
       }
       else{
-        return FunctionalApplication.handleFunctionApplication(parsed, scope);
+        return FunctionApplication.handleFunctionApplication(parsed, scope);
       }
     }
   }

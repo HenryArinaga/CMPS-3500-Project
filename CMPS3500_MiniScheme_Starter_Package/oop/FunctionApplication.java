@@ -2,15 +2,15 @@
   / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga /
   / ASGT: CHECKPOINT 3                                  /
   / ORGN: CSUB - CMPS 3500                              /
-  / FILE: FunctionalApplication.java                    /
+  / FILE: FunctionApplication.java                    /
   / DATE: 05/01/2026                                    /
 */
 
 import java.util.List;
 import java.util.ArrayList;
 
-public class FunctionalApplication extends ExpressionHandler {
-    public FunctionalApplication(List<String> expression){
+public class FunctionApplication extends ExpressionHandler {
+    public FunctionApplication(List<String> expression){
         super(expression, 1);
     }
 
@@ -108,7 +108,7 @@ public class FunctionalApplication extends ExpressionHandler {
         String op = expression.get(0);
 
         if(op.equals("(")){
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             funcAppExpression.index = 0;
             List<String> lambdaExpr = funcAppExpression.extractPart();
             List<List<String>> arguments = new ArrayList<>();
@@ -129,7 +129,7 @@ public class FunctionalApplication extends ExpressionHandler {
         String lambdaValue = scope.lookupScopeEntry(op);
 
         if(Lambda.isLambdaValue(lambdaValue)){
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             List<List<String>> arguments = new ArrayList<>();
 
             while(funcAppExpression.index < expression.size()){
@@ -141,7 +141,7 @@ public class FunctionalApplication extends ExpressionHandler {
 
         if (op.equals("+")) {
             int result = 0;
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
 
             while (funcAppExpression.index < expression.size()) {
                 int value = 0;
@@ -157,7 +157,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return Integer.toString(result);
         } 
         else if (op.equals("-")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             String error = "";
             int result = 0;
             
@@ -182,7 +182,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return Integer.toString(result);
         }
         else if (op.equals("*")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             int result = 1;
 
             while(funcAppExpression.index < expression.size()){
@@ -199,7 +199,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return Integer.toString(result);
         }
         else if (op.equals("/")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             int result = 0;
             String error = "";
 
@@ -228,7 +228,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return Integer.toString(result);
         }
         else if (op.equals("=")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             int left = 0;
             String error = "";
 
@@ -258,7 +258,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals("<")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             int left = 0;
             String error = "";
 
@@ -288,7 +288,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals(">")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             int left = 0;
             String error = "";
 
@@ -318,7 +318,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals("<=")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             int left = 0;
             String error = "";
 
@@ -348,7 +348,7 @@ public class FunctionalApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals(">=")) {
-            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            FunctionApplication funcAppExpression = new FunctionApplication(expression);
             int left = 0;
             String error = "";
 
