@@ -46,7 +46,8 @@ public class Main{
                     System.out.println("ERROR");
                 }
             }
-            global.exitScope();
         }
+        
+        global.exitScope();
     }
 }
