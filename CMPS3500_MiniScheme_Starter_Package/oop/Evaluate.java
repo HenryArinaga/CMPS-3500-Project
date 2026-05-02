@@ -41,42 +41,39 @@ public class Evaluate {
     if(op.equals("cond")){
       return Cond.handleCond(parsed, scope);
     }
-    // else{
-    //   if(parsed.size() == 1){
-    //     if(parsed.get(0).equals("#t" || parsed.get(0).equals"#f")){
-    //       return parsed.get(0);
-    //     }
+    else{
+      if(parsed.size() == 1){
+        if(parsed.get(0).equals("#t") || parsed.get(0).equals("#f")){
+          return parsed.get(0);
+        }
 
-    //     boolean isNumber = true;
-    //     int start = 0;
+        boolean isNumber = true;
+        int start = 0;
 
-    //     if(parsed.get(0).charAt(0) == '-'){
-    //       start = 1;
-    //     }
+        if(parsed.get(0).charAt(0) == '-'){
+          start = 1;
+        }
 
-    //     for (int i = 0; i< parsed.get(0).length(); i++){
-    //       if(parsed.get(0).charAt(i) < '0' || parsed.get(0).charAt(i) > '9' ){
-    //         isNumber = false;
-    //       }
-    //     }
+        for (int i = 0; i< parsed.get(0).length(); i++){
+          if(parsed.get(0).charAt(i) < '0' || parsed.get(0).charAt(i) > '9' ){
+            isNumber = false;
+          }
+        }
 
-    //     if(isNumber && start < parsed.get(0).length()){
-    //       return parsed.get(0);
-    //     }
+        if(isNumber && start < parsed.get(0).length()){
+          return parsed.get(0);
+        }
 
-    //     String value = scope.lookupScopeEntry(op){
-    //       if(value.equals("NOT FOUND")){
-    //         return "UNDECLARED_IDENTIFIER";
-    //       }
-    //     }
-
-    //     return value;
-    //   }
-    //   else{
-    //     return handleFunctionApplication(parsed, scope);
-    //   }
-    // }
-
-    return "";
+        String value = scope.lookupScopeEntry(op);
+        if(value.equals("NOT FOUND")){
+            return "UNDECLARED_IDENTIFIER";
+        }
+        
+        return value;
+      }
+      else{
+        return FunctionalApplication.handleFunctionApplication(parsed, scope);
+      }
+    }
   }
 } 

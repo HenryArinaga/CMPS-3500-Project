@@ -101,90 +101,284 @@ public class FunctionalApplication extends ExpressionHandler {
         return true;
     }
 
-    // public static String handleFunctionApplication(
-    //     List<String> expression,
-    //     Scope scope
-    // ){
-    //     String op = expression.get(0);
+    public static String handleFunctionApplication(
+        List<String> expression,
+        Scope scope
+    ){
+        String op = expression.get(0);
 
-    //     if(op.equals("(")){
-    //         FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
-    //         funcAppExpression.index = 0;
-    //         List<String> lambdaExpr = funcAppExpression.extractPart();
-    //         List<List<String>> arguments = new ArrayList<>();
+        if(op.equals("(")){
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            funcAppExpression.index = 0;
+            List<String> lambdaExpr = funcAppExpression.extractPart();
+            List<List<String>> arguments = new ArrayList<>();
 
-    //         while(funcAppExpression.index < expression.size()){
-    //             arguments.add(funcAppExpression.extractPart());
-    //         }
+            while(funcAppExpression.index < expression.size()){
+                arguments.add(funcAppExpression.extractPart());
+            }
 
-    //         String lambdaValue = Evaluate.evaluate(lambdaExpr, scope);
+            String lambdaValue = Evaluate.evaluate(lambdaExpr, scope);
 
-    //         if(getError(lambdaValue)){
-    //             return lambdaValue;
-    //         }
+            if(getError(lambdaValue)){
+                return lambdaValue;
+            }
 
-    //         return Lambda.applyLambdaValue(lambdaValue, arguments, scope);
-    //     }
+            return Lambda.applyLambdaValue(lambdaValue, arguments, scope);
+        }
 
-    //     String lambdaValue = scope.lookupScopeEntry(op);
+        String lambdaValue = scope.lookupScopeEntry(op);
 
-    //     if(Lambda.isLambdaValue(lambdaValue)){
-    //         FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
-    //         funcAppExpression.index = 1;
-    //         List<List<String>> arguments = new ArrayList<>();
+        if(Lambda.isLambdaValue(lambdaValue)){
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            List<List<String>> arguments = new ArrayList<>();
 
-    //         while(funcAppExpression.index < expression.size()){
-    //             arguments.add(funcAppExpression.extractPart());
-    //         }
+            while(funcAppExpression.index < expression.size()){
+                arguments.add(funcAppExpression.extractPart());
+            }
 
-    //         return Lambda.applyLambdaValue(lambdaValue, arguments, scope);
-    //     }
+            return Lambda.applyLambdaValue(lambdaValue, arguments, scope);
+        }
 
-    //     if (op.equals("+")) {
-    //         int result = 0;
-    //         FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
-    //         funcAppExpression.index = 1;
+        if (op.equals("+")) {
+            int result = 0;
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
 
-    //         while (funcAppExpression.index < expression.size()) {
-    //             int value = 0;
-    //             String error = "";
+            while (funcAppExpression.index < expression.size()) {
+                int value = 0;
+                String error = "";
 
-    //             if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
-    //                 return error;
-    //             }
+                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
+                    return error;
+                }
 
-    //             result += value;
-    //         }
+                result += value;
+            }
 
-    //         return Integer.toString(result);
-    //     } 
-    //     else if (op.equals("-")) {
-    //         if (expression.size() < 2) {
-    //             return "WRONG_ARITY";
-    //         }
+            return Integer.toString(result);
+        } 
+        else if (op.equals("-")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            String error = "";
+            int result = 0;
+            
+            if (expression.size() < 2) {
+                return "WRONG_ARITY";
+            }
 
-    //         int result = 0;
-    //         FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
-    //         funcAppExpression.index = 1;
-    //         String error = "";
+            if (!funcAppExpression.resolveExpressionValue( scope, result, error)) {
+                return error;
+            }
 
-    //         if (!funcAppExpression.resolveExpressionValue( scope, result, error)) {
-    //             return error;
-    //         }
+            while(funcAppExpression.index < expression.size()){
+            int value = 0;
 
-    //         while(funcAppExpression.index < expression.size()){
-    //         int value = 0;
-
-    //             if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
-    //                 return error;
-    //             }
+                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
+                    return error;
+                }
                 
-    //             result -= value;
-    //         }
+                result -= value;
+            }
 
-    //         return 
-    //     }
-    // }
-        
+            return Integer.toString(result);
+        }
+        else if (op.equals("*")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            int result = 1;
+
+            while(funcAppExpression.index < expression.size()){
+                int value = 0;
+                String error = "";
+
+                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
+                    return error;
+                }
+                
+                result *= value;
+            }
+
+            return Integer.toString(result);
+        }
+        else if (op.equals("/")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            int result = 0;
+            String error = "";
+
+            if (expression.size() < 2) {
+                return "WRONG_ARITY";
+            }
+            if (!funcAppExpression.resolveExpressionValue( scope, result, error)) {
+                return error;
+            }
+
+            while(funcAppExpression.index < expression.size()){
+                int value = 0;
+
+                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
+                    return error;
+                }
+
+                if (value == 0)
+                {
+                    return "DIVISION_BY_ZERO";
+                }
+                
+                result /= value;
+            }
+
+            return Integer.toString(result);
+        }
+        else if (op.equals("=")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            int left = 0;
+            String error = "";
+
+            if (expression.size() < 3) {
+                return "WRONG_ARITY";
+            }
+
+            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
+                return error;
+            }
+
+            while(funcAppExpression.index < expression.size()){
+                int right = 0;
+
+                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
+                    return error;
+                }
+
+                if (left != right)
+                {
+                    return "#f";
+                }
+                
+                left = right;
+            }
+
+            return "#t";
+        }
+        else if (op.equals("<")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            int left = 0;
+            String error = "";
+
+            if (expression.size() < 3) {
+                return "WRONG_ARITY";
+            }
+
+            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
+                return error;
+            }
+
+            while(funcAppExpression.index < expression.size()){
+                int right = 0;
+
+                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
+                    return error;
+                }
+
+                if (!(left < right))
+                {
+                    return "#f";
+                }
+                
+                left = right;
+            }
+
+            return "#t";
+        }
+        else if (op.equals(">")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            int left = 0;
+            String error = "";
+
+            if (expression.size() < 3) {
+                return "WRONG_ARITY";
+            }
+
+            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
+                return error;
+            }
+
+            while(funcAppExpression.index < expression.size()){
+                int right = 0;
+
+                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
+                    return error;
+                }
+
+                if (!(left > right))
+                {
+                    return "#f";
+                }
+                
+                left = right;
+            }
+
+            return "#t";
+        }
+        else if (op.equals("<=")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            int left = 0;
+            String error = "";
+
+            if (expression.size() < 3) {
+                return "WRONG_ARITY";
+            }
+
+            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
+                return error;
+            }
+
+            while(funcAppExpression.index < expression.size()){
+                int right = 0;
+
+                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
+                    return error;
+                }
+
+                if (!(left <= right))
+                {
+                    return "#f";
+                }
+                
+                left = right;
+            }
+
+            return "#t";
+        }
+        else if (op.equals(">=")) {
+            FunctionalApplication funcAppExpression = new FunctionalApplication(expression);
+            int left = 0;
+            String error = "";
+
+            if (expression.size() < 3) {
+                return "WRONG_ARITY";
+            }
+
+            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
+                return error;
+            }
+
+            while(funcAppExpression.index < expression.size()){
+                int right = 0;
+
+                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
+                    return error;
+                }
+
+                if (!(left >= right))
+                {
+                    return "#f";
+                }
+                
+                left = right;
+            }
+
+            return "#t";
+        }
+
+        return "UNDECLARED_IDENTIFIER";
+    }     
 }
     
