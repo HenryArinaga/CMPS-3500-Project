@@ -22,14 +22,13 @@ public class Main{
         List<List<String>> expressions = parser.splitExpressions();
         Scope global = new Scope(null);
 
-        int num = 0;
         boolean bNum = false;
 
         for(List<String> expression : expressions){
             result = Evaluate.evaluate(expression, global);
             
             try {
-                num = Integer.parseInt(result);
+                Integer.parseInt(result);
                 bNum = true;
             } catch (Exception exception) {
                 bNum = false;
@@ -47,6 +46,7 @@ public class Main{
                     System.out.println("ERROR");
                 }
             }
+            global.exitScope();
         }
     }
 }
