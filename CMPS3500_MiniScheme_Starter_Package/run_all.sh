@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# variable cmd is set to the first argument passed
 cmd="${1:-}"
 case "$cmd" in
   list-cases)
@@ -9,18 +10,22 @@ case "$cmd" in
   run-case)
     impl="${2:-}"
     file="${3:-}"
-    echo "Implementation: ${impl}"
-    echo "Case: ${file}"
-    echo "Status: ERROR"
-    echo "Error: NOT_IMPLEMENTED"
-    ;;
-  compare-case)
-    file="${2:-}"
-    echo "Case: ${file}"
-    echo
-    echo "procedural: ERROR -> NOT_IMPLEMENTED"
-    echo "oop:        ERROR -> NOT_IMPLEMENTED"
-    echo "functional: ERROR -> NOT_IMPLEMENTED"
+
+    # if impl=procedural:
+    #if [ $impl -eq "procedural" ]; then
+    if [ "$2" == "procedural" ]; then
+
+        output=$(./procedural/cpp_interpreter "$file") # run: cpp_interpreter <file_name.scm>
+
+        echo "Implementation: ${impl}"
+        echo "Case: ${file}"
+        echo "Status: OK"        # <------- Status is always OK for now
+        echo "Result: ${output}"
+        #echo "Type: -----"   # <----- CHANGE TYPE, maybe use a variable.
+        
+        #implement error messages (later)
+        #echo "Error: NOT_IMPLEMENTED"  
+    fi
     ;;
   *)
     echo "Usage: ./run_all.sh {list-cases|run-case <implementation> <file>|compare-case <file>}"
