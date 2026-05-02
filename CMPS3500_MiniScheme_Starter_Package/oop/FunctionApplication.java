@@ -38,44 +38,40 @@ public class FunctionApplication extends ExpressionHandler {
         return true;
     }
 
-    private static boolean resolveValue(
+    private boolean resolveValue(
         String token,
-        Scope scope,
-        int result,
-        String error
+        Scope scope
     ){
         String value = token;
 
         if(!isIntegerLiteral(value)){
             if(value.equals("#t") || value.equals("#f")){
-                error = "TYPE_MISMATCH";
+                this.error = "TYPE_MISMATCH";
                 return false;
             }
 
             value = scope.lookupScopeEntry(value);
 
-            if(value == "NOT FOUND"){
-                error = "UNDECLARED_IDENTIFIER";
+            if(value.equals("NOT FOUND")){
+                this.error = "UNDECLARED_IDENTIFIER";
                 return false;
             }
 
             if(!isIntegerLiteral(value)){
-                error = "TYPE_MISMATCH";
+                this.error = "TYPE_MISMATCH";
                 return false;
             }
         }
 
-        result = Integer.parseInt(value);
+        this.value = Integer.parseInt(value);
         return true;
     }
 
     private boolean resolveExpressionValue(
-        Scope scope,
-        int result,
-        String error
+        Scope scope
     ){
         if(!expression.get(index).equals("(")){
-            if(!resolveValue(expression.get(index), scope, result, error)){
+            if(!resolveValue(expression.get(index), scope)){
                 return false;
             }
 
@@ -84,20 +80,19 @@ public class FunctionApplication extends ExpressionHandler {
         }
 
         List<String> nestedExpression = extractPart();
-
         String value = Evaluate.evaluate(nestedExpression, scope);
         
         if(getError(value)){
-            error = value;
+            this.error = value;
             return false;
         }
 
         if(!isIntegerLiteral(value)){
-            error = "TYPE_MISMATCH";
+            this.error = "TYPE_MISMATCH";
             return false;
         }
 
-        result = Integer.parseInt(value);
+        this.result = Integer.parseInt(value);
         return true;
     }
 
@@ -108,13 +103,13 @@ public class FunctionApplication extends ExpressionHandler {
         String op = expression.get(0);
 
         if(op.equals("(")){
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            funcAppExpression.index = 0;
-            List<String> lambdaExpr = funcAppExpression.extractPart();
+            FunctionApplication faExp = new FunctionApplication(expression);
+            faExp.index = 0;
+            List<String> lambdaExpr = faExp.extractPart();
             List<List<String>> arguments = new ArrayList<>();
 
-            while(funcAppExpression.index < expression.size()){
-                arguments.add(funcAppExpression.extractPart());
+            while(faExp.index < expression.size()){
+                arguments.add(faExp.extractPart());
             }
 
             String lambdaValue = Evaluate.evaluate(lambdaExpr, scope);
@@ -129,123 +124,108 @@ public class FunctionApplication extends ExpressionHandler {
         String lambdaValue = scope.lookupScopeEntry(op);
 
         if(Lambda.isLambdaValue(lambdaValue)){
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
+            FunctionApplication faExp = new FunctionApplication(expression);
             List<List<String>> arguments = new ArrayList<>();
 
-            while(funcAppExpression.index < expression.size()){
-                arguments.add(funcAppExpression.extractPart());
+            while(faExp.index < expression.size()){
+                arguments.add(faExp.extractPart());
             }
 
             return Lambda.applyLambdaValue(lambdaValue, arguments, scope);
         }
 
         if (op.equals("+")) {
-            int result = 0;
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
+            FunctionApplication faExp = new FunctionApplication(expression);
 
-            while (funcAppExpression.index < expression.size()) {
-                int value = 0;
-                String error = "";
-
-                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
-                    return error;
+            while (faExp.index < expression.size()) {
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
 
-                result += value;
+                faExp.result += faExp.value;
             }
 
-            return Integer.toString(result);
+            return Integer.toString(faExp.result);
         } 
         else if (op.equals("-")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            String error = "";
-            int result = 0;
-            
+            FunctionApplication faExp = new FunctionApplication(expression);
+
             if (expression.size() < 2) {
                 return "WRONG_ARITY";
             }
 
-            if (!funcAppExpression.resolveExpressionValue( scope, result, error)) {
-                return error;
+            if (!faExp.resolveExpressionValue(scope)) {
+                return faExp.error;
             }
 
-            while(funcAppExpression.index < expression.size()){
-            int value = 0;
-
-                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
                 
-                result -= value;
+                faExp.result -= faExp.value;
             }
 
-            return Integer.toString(result);
+            return Integer.toString(faExp.result);
         }
         else if (op.equals("*")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            int result = 1;
+            FunctionApplication faExp = new FunctionApplication(expression);
+            faExp.result = 1;
 
-            while(funcAppExpression.index < expression.size()){
-                int value = 0;
-                String error = "";
-
-                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
                 
-                result *= value;
+                faExp.result *= faExp.value;
             }
 
-            return Integer.toString(result);
+            return Integer.toString(faExp.result);
         }
         else if (op.equals("/")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            int result = 0;
-            String error = "";
+            FunctionApplication faExp = new FunctionApplication(expression);
 
             if (expression.size() < 2) {
                 return "WRONG_ARITY";
             }
-            if (!funcAppExpression.resolveExpressionValue( scope, result, error)) {
-                return error;
+
+            if (!faExp.resolveExpressionValue(scope)) {
+                return faExp.error;
             }
 
-            while(funcAppExpression.index < expression.size()){
-                int value = 0;
-
-                if (!funcAppExpression.resolveExpressionValue( scope, value, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
 
-                if (value == 0)
+                if (faExp.value == 0)
                 {
                     return "DIVISION_BY_ZERO";
                 }
                 
-                result /= value;
+                faExp.result /= faExp.value;
             }
 
-            return Integer.toString(result);
+            return Integer.toString(faExp.result);
         }
         else if (op.equals("=")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            int left = 0;
-            String error = "";
-
+            FunctionApplication faExp = new FunctionApplication(expression);
             if (expression.size() < 3) {
                 return "WRONG_ARITY";
             }
 
-            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
-                return error;
+            if (!faExp.resolveExpressionValue(scope)) {
+                return faExp.error;
             }
 
-            while(funcAppExpression.index < expression.size()){
-                int right = 0;
+            int left = faExp.value;
 
-                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
+
+                int right = faExp.value;
 
                 if (left != right)
                 {
@@ -258,24 +238,24 @@ public class FunctionApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals("<")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            int left = 0;
-            String error = "";
+            FunctionApplication faExp = new FunctionApplication(expression);
 
             if (expression.size() < 3) {
                 return "WRONG_ARITY";
             }
 
-            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
-                return error;
+            if (!faExp.resolveExpressionValue(scope)) {
+                return faExp.error;
             }
 
-            while(funcAppExpression.index < expression.size()){
-                int right = 0;
+            int left = faExp.value;
 
-                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
+
+                int right = faExp.value;
 
                 if (!(left < right))
                 {
@@ -288,24 +268,24 @@ public class FunctionApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals(">")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            int left = 0;
-            String error = "";
+            FunctionApplication faExp = new FunctionApplication(expression);
 
             if (expression.size() < 3) {
                 return "WRONG_ARITY";
             }
 
-            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
-                return error;
+            if (!faExp.resolveExpressionValue(scope)) {
+                return faExp.error;
             }
 
-            while(funcAppExpression.index < expression.size()){
-                int right = 0;
+            int left = faExp.value;
 
-                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
+
+                int right = faExp.value;
 
                 if (!(left > right))
                 {
@@ -318,24 +298,24 @@ public class FunctionApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals("<=")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            int left = 0;
-            String error = "";
-
+            FunctionApplication faExp = new FunctionApplication(expression);
+            
             if (expression.size() < 3) {
                 return "WRONG_ARITY";
             }
 
-            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
-                return error;
+            if (!faExp.resolveExpressionValue(scope)) {
+                return faExp.error;
             }
 
-            while(funcAppExpression.index < expression.size()){
-                int right = 0;
+            int left = faExp.value;
 
-                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
+
+                int right = faExp.value;
 
                 if (!(left <= right))
                 {
@@ -348,24 +328,24 @@ public class FunctionApplication extends ExpressionHandler {
             return "#t";
         }
         else if (op.equals(">=")) {
-            FunctionApplication funcAppExpression = new FunctionApplication(expression);
-            int left = 0;
-            String error = "";
-
+            FunctionApplication faExp = new FunctionApplication(expression);
+            
             if (expression.size() < 3) {
                 return "WRONG_ARITY";
             }
 
-            if (!funcAppExpression.resolveExpressionValue( scope, left, error)) {
-                return error;
+            if (!faExp.resolveExpressionValue(scope)) {
+                return faExp.error;
             }
 
-            while(funcAppExpression.index < expression.size()){
-                int right = 0;
+            int left = faExp.value;
 
-                if (!funcAppExpression.resolveExpressionValue( scope, right, error)) {
-                    return error;
+            while(faExp.index < expression.size()){
+                if (!faExp.resolveExpressionValue(scope)) {
+                    return faExp.error;
                 }
+
+                int right = faExp.value;
 
                 if (!(left >= right))
                 {
@@ -381,4 +361,3 @@ public class FunctionApplication extends ExpressionHandler {
         return "UNDECLARED_IDENTIFIER";
     }     
 }
-    

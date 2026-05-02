@@ -12,10 +12,16 @@ import java.util.ArrayList;
 public class ExpressionHandler {
     protected List<String> expression;
     protected int index;
+    protected int result;
+    protected int value;
+    protected String error;
 
     public ExpressionHandler(List<String> expression, int index){
         this.expression = expression;
         this.index = index;
+        this.result = 0;
+        this.value = 0;
+        this.error = "";
     }
 
     protected List<String> extractPart(){
