@@ -1,9 +1,9 @@
 /*
   / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
-  / ASGT: CHECKPOINT 2                                  /
-  / ORGN: CSUB - CMPS 3500                              /
-  / FILE: function_application.cpp                      /
-  / DATE: 04/11/2026                                    /
+  / ASGT: CHECKPOINT 2                                   /
+  / ORGN: CSUB - CMPS 3500                               /
+  / FILE: function_application.cpp                       /
+  / DATE: 04/11/2026                                     /
 */
 #include "function_application.h"
 #include "evaluate.h"
@@ -11,7 +11,7 @@
 #include "lambda.h"
 #include <cctype>
 
-static bool isErrorValue(const std::string& value)
+static bool isErrorValue(const std::string &value)
 {
     return value == "PARSE_ERROR" ||
            value == "UNDECLARED_IDENTIFIER" ||
@@ -20,7 +20,8 @@ static bool isErrorValue(const std::string& value)
            value == "DIVISION_BY_ZERO";
 }
 
-static bool isIntegerLiteral(const std::string& token)
+// Helper function to check if a token is an integer literal
+static bool isIntegerLiteral(const std::string &token)
 {
     if (token.empty())
     {
@@ -50,10 +51,10 @@ static bool isIntegerLiteral(const std::string& token)
     return true;
 }
 
+// Helper function to extract a part of the expression
 static std::vector<std::string> extractPart(
-    const std::vector<std::string>& expr,
-    int& i
-)
+    const std::vector<std::string> &expr,
+    int &i)
 {
     std::vector<std::string> part;
 
@@ -71,6 +72,7 @@ static std::vector<std::string> extractPart(
 
     int depth = 0;
 
+    // Extract the part starting from the current index, handling nested parentheses
     while (i < (int)expr.size())
     {
         part.push_back(expr[i]);
@@ -98,14 +100,14 @@ static std::vector<std::string> extractPart(
 
 // Resolves a token to an integer value
 static bool resolveValue(
-    const std::string& token,
-    Scope* scope,
-    int& result,
-    std::string& error
-)
+    const std::string &token,
+    Scope *scope,
+    int &result,
+    std::string &error)
 {
     std::string value = token;
 
+    // If the token is not an integer literal, it must be a variable reference
     if (!isIntegerLiteral(value))
     {
         if (value == "#t" || value == "#f")
@@ -132,14 +134,13 @@ static bool resolveValue(
     result = std::stoi(value);
     return true;
 }
-
+// Resolves an expression to an integer value, handling nested expressions as well
 static bool resolveExpressionValue(
-    const std::vector<std::string>& expr,
-    int& i,
-    Scope* scope,
-    int& result,
-    std::string& error
-)
+    const std::vector<std::string> &expr,
+    int &i,
+    Scope *scope,
+    int &result,
+    std::string &error)
 {
     if (expr[i] != "(")
     {
@@ -194,12 +195,14 @@ static bool resolveExpressionValue(
     result = std::stoi(value);
     return true;
 }
-// Handles function application for built-in functions like +, -, *, /
+/* Handles function application for built-in functions like +, -, *, /
+    as well as user defined lambda functions. It evaluates the operator and arguments,
+    checks for errors, and applies the operator or lambda to the arguments. */
 std::string handleFunctionApplication(
-    const std::vector<std::string>& expr,
-    Scope* scope
-)
+    const std::vector<std::string> &expr,
+    Scope *scope)
 {
+    // the first token in the expression is the operator or function being applied
     std::string op = expr[0];
     if (op == "(")
     {
@@ -207,6 +210,7 @@ std::string handleFunctionApplication(
         std::vector<std::string> lambda_expr = extractPart(expr, i);
         std::vector<std::vector<std::string>> arguments;
 
+        // extract the arguments for the lambda application
         while (i < (int)expr.size())
         {
             arguments.push_back(extractPart(expr, i));
@@ -222,6 +226,7 @@ std::string handleFunctionApplication(
 
     std::string lambda_value = lookupScopeEntry(scope, op);
 
+    // if the operator is not found in the scope, return an error
     if (isLambdaValue(lambda_value))
     {
         int i = 1;
@@ -267,6 +272,7 @@ std::string handleFunctionApplication(
         int result = 0;
         std::string error;
 
+        // resolve the first value to initialize the result for subtraction
         if (!resolveExpressionValue(expr, i, scope, result, error))
         {
             return error;
@@ -286,7 +292,7 @@ std::string handleFunctionApplication(
 
         return std::to_string(result);
     }
-    
+
     else if (op == "*")
     {
         int result = 1;
@@ -517,6 +523,6 @@ std::string handleFunctionApplication(
 
         return "#t";
     }
-    //unknown function if we get here
+    // unknown function if we get here
     return "UNDECLARED_IDENTIFIER";
 }

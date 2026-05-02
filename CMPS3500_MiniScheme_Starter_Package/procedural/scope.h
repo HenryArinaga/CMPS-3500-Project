@@ -1,9 +1,9 @@
 /*
-  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
-  / ASGT: CHECKPOINT 2                                  /
-  / ORGN: CSUB - CMPS 3500                              /
-  / FILE: scope.h                                  /
-  / DATE: 04/11/2026                                    /
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga   /
+  / ASGT: CHECKPOINT 2                                    /
+  / ORGN: CSUB - CMPS 3500                                /
+  / FILE: scope.h                                         /  
+  / DATE: 04/11/2026                                      /
 */
 #ifndef SCOPE_H
 #define SCOPE_H

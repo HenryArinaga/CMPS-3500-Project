@@ -22,16 +22,29 @@ public class Main{
         List<List<String>> expressions = parser.splitExpressions();
         Scope global = new Scope(null);
 
+        int num = 0;
+        boolean bNum = false;
+
         for(List<String> expression : expressions){
             result = Evaluate.evaluate(expression, global);
             
+            try {
+                num = Integer.parseInt(result);
+                bNum = true;
+            } catch (Exception exception) {
+                bNum = false;
+            }
+
             if(!result.isEmpty()){
                 System.out.println(result);
                 if(result.equals("#t") || result.equals("#f")){
                     System.out.println("bool");
                 }
-                else {
+                else if(bNum == true){
                     System.out.println("int");
+                }
+                else {
+                    System.out.println("ERROR");
                 }
             }
         }

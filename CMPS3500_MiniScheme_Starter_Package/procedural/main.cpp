@@ -20,27 +20,16 @@ int main(int argc, char *argv[])
 {
     std::string result = "";
 
-    //std::string file_path = std::string("../tests/public/") + argv[1];
     std::string file_path = argv[1];
 
     std::string source = read_file(file_path);
 
     auto tokens = tokenize(source);
-
     auto expressions = splitExpressions(tokens);
-
     Scope* global = enterScope(NULL);
 
-    // for (const auto& expr : expressions)
-    // {
-    //     result = evaluate(expr, global);
-
-    //     if (!result.empty())
-    //     {
-    //         std::cout << result << "\n";
-    //     }
-    // }
-
+    int num = 0;
+    bool b_num = false;
 
     for (const auto& expr : expressions)
     {
@@ -48,20 +37,30 @@ int main(int argc, char *argv[])
 
         if (!result.empty())
         {
+
             std::cout << result << "\n";
+
+            try {
+                num = std::stoi(result);
+                b_num = true;
+            } catch (...) {
+                b_num = false;
+            }
 
             if (result == "#t" || result == "#f")
             {
                 std::cout << "bool";
             }
-            else
+            else if (b_num == true)
             {
                 std::cout << "int";
             }
+            else
+            {
+                std::cout << "ERROR";
+            }
         }
     }
-
-
 
     exitScope(global);
     return 0;

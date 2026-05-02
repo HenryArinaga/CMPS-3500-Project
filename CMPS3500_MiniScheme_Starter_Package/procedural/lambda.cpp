@@ -1,8 +1,16 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga    /
+  / ASGT: CHECKPOINT 3                                     /
+  / ORGN: CSUB - CMPS 3500                                 /
+  / FILE: lambda.cpp                                       /
+  / DATE: 05/1/2026                                        / 
+*/
 #include "lambda.h"
 #include "evaluate.h"
 #include <string>
 
-static std::string joinTokens(
+// Helper function to combine tokens into a single string with spaces
+static std::string combineTokens(
     const std::vector<std::string>& tokens,
     int start,
     int end
@@ -23,6 +31,8 @@ static std::string joinTokens(
     return result;
 }
 
+// Helper function to split a string by a delimiter into a vector of strings
+// delimiter is a single character that separates the parts of the string
 static std::vector<std::string> splitString(
     const std::string& text,
     char delimiter
@@ -33,6 +43,8 @@ static std::vector<std::string> splitString(
 
     for (int i = 0; i < (int)text.size(); i++)
     {
+        // if the current character is the delimiter
+        // add the current part to the parts vector and clear it
         if (text[i] == delimiter)
         {
             parts.push_back(current);
@@ -48,11 +60,13 @@ static std::vector<std::string> splitString(
     return parts;
 }
 
+// Helper function to split a string by spaces into a vector of strings
 static std::vector<std::string> splitBySpace(const std::string& text)
 {
     std::vector<std::string> tokens;
     std::string current;
 
+    // split the text by spaces, adding each token to the tokens vector
     for (int i = 0; i < (int)text.size(); i++)
     {
         if (text[i] == ' ')
@@ -77,6 +91,10 @@ static std::vector<std::string> splitBySpace(const std::string& text)
     return tokens;
 }
 
+/* this function handles the built in lambda expression by parsing the parameter
+    list and body of the lambda, and returning a string representation of the lambda that 
+    encodes the parameter
+*/
 std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
 {
     (void)scope;
@@ -94,6 +112,8 @@ std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
     int i = 2;
     std::vector<std::string> params;
 
+    // extract the parameter list of the lambda expression, 
+    // which is a list of tokens until the next closing parenthesis
     while (i < (int)expr.size() && expr[i] != ")")
     {
         if (expr[i] == "(")
@@ -129,7 +149,9 @@ std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
         param_text += params[j];
     }
 
-    std::string body_text = joinTokens(expr, i, expr.size());
+    // combine the remaining tokens in the expression into 
+    // a single string for the body of the lambda
+    std::string body_text = combineTokens(expr, i, expr.size());
 
     if (body_text.empty())
     {
@@ -139,11 +161,15 @@ std::string handleLambda(const std::vector<std::string>& expr, Scope* scope)
     return "LAMBDA|" + param_text + "|" + body_text;
 }
 
+// Helper function to check if a value is a lambda value
+// which is lambda(value 1 | value n ...) 
 bool isLambdaValue(const std::string& value)
 {
     return value.size() >= 7 && value.substr(0, 7) == "LAMBDA|";
 }
 
+// This function applies a lambda_value to a list of 
+// arguments by evaluating the body of the lambda
 std::string applyLambdaValue(
     const std::string& lambda_value,
     const std::vector<std::vector<std::string>>& arguments,
@@ -154,7 +180,11 @@ std::string applyLambdaValue(
     {
         return "TYPE_MISMATCH";
     }
-
+    
+    /* split the lambda value into its parameter list and body using 
+     the delimiter which is "|"
+     the delimiter is used to separate the parameter list and body 
+    of the lambda in the string representation of the lambda value */
     std::vector<std::string> parts = splitString(lambda_value, '|');
 
     if (parts.size() != 3)

@@ -1,3 +1,10 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
+  / ASGT: CHECKPOINT 3                                   /
+  / ORGN: CSUB - CMPS 3500                               /
+  / FILE: lambda.h                                       /
+  / DATE: 05/1/2026                                      / 
+*/
 #ifndef LAMBDA_H
 #define LAMBDA_H
 
