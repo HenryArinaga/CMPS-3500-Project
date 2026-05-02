@@ -29,16 +29,16 @@ public class Evaluate {
     if(op.equals("if")){
        return If.handleIf(parsed, scope);
     }
-    if(op.equals("define")){
+    else if(op.equals("define")){
       return Define.handleDefine(parsed, scope);
     }
-    if(op.equals("let")){
+    else if(op.equals("let")){
       return Let.handleLet(parsed, scope);
     }
-    if(op.equals("lambda")){
+    else if(op.equals("lambda")){
       return Lambda.handleLambda(parsed, scope);
     }
-    if(op.equals("cond")){
+    else if(op.equals("cond")){
       return Cond.handleCond(parsed, scope);
     }
     else{
