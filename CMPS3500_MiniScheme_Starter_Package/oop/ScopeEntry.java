@@ -1,3 +1,11 @@
+/*
+  / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga /
+  / ASGT: CHECKPOINT 3                                  /
+  / ORGN: CSUB - CMPS 3500                              /
+  / FILE: ScopeEntry.java                               /
+  / DATE: 05/01/2026                                    /
+*/
+
 public class ScopeEntry {
     private String name;
     private String value;
