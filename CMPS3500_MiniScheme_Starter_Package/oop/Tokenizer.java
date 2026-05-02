@@ -20,7 +20,7 @@ public class Tokenizer {
         String current = "";
 
         for(char c : sourceCode.toCharArray()){
-            if(c == 'c' || c == ')'){
+            if(c == '(' || c == ')'){
                 if (!current.isEmpty()){
                     tokenList.add(current);
                     current = "";

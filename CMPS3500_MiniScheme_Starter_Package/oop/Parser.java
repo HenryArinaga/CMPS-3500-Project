@@ -24,8 +24,8 @@ public class Parser {
         }
 
         if(inputTokens.get(0).equals("(")){
-            if(inputTokens.get(inputTokens.size() - 1).equals(")")){
-                System.err.println("Parse error: missing closing parenthesis");
+            if(!inputTokens.get(inputTokens.size() - 1).equals(")")){
+                parsedTokens.add("PARSE_ERROR");
                 return parsedTokens;
             }
             for(int i = 1; i < inputTokens.size() - 1; i++){
@@ -49,6 +49,7 @@ public class Parser {
                 if(depth == 0){
                     current.clear();
                 }
+
                 depth++;
             }
 
@@ -59,8 +60,16 @@ public class Parser {
             if(tokens.get(i).equals(")")){
                 depth--;
 
+                if(depth < 0){
+                    List<List<String>> parseError = new ArrayList<>();
+                    List<String> error = new ArrayList<>();
+                    error.add("PARSE_ERROR");
+                    parseError.add(error);
+                    return parseError;
+                }
+
                 if(depth == 0){
-                    expressions.add(current);
+                    expressions.add(new ArrayList<>(current));
                 }
             }
 
@@ -71,6 +80,14 @@ public class Parser {
             }
         }
         
+        if(depth != 0){
+            List<List<String>> parseError = new ArrayList<>();
+            List<String> error = new ArrayList<>();
+            error.add("PARSE_ERROR");
+            parseError.add(error);
+            return parseError;
+        }
+
         return expressions;
     }
 }
