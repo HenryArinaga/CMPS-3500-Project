@@ -29,9 +29,9 @@ public class Evaluate {
     if(op.equals("if")){
        return If.handleIf(parsed, scope);
     }
-    // if(op.equals("define")){
-    //   return handleDefine(parsed, scope);
-    // }
+    if(op.equals("define")){
+      return Define.handleDefine(parsed, scope);
+    }
     // if(op.equals("let")){
     //   return handleLet(parsed, scope);
     // }
