@@ -35,9 +35,9 @@ public class Evaluate {
     if(op.equals("let")){
       return Let.handleLet(parsed, scope);
     }
-    // if(op.equals("lambda")){
-    //   return handleLambda(parsed, scope);
-    // }
+    if(op.equals("lambda")){
+      return Lambda.handleLambda(parsed, scope);
+    }
     // if(op.equals("cond")){
     //   return handleCond(parsed, scope);
     // }

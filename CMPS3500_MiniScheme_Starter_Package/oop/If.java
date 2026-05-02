@@ -35,7 +35,7 @@ public class If extends ExpressionHandler {
         if(condition.isEmpty() ||
             trueBranch.isEmpty() ||
             falseBranch.isEmpty() ||
-            ifExpression.i != expression.size()){
+            ifExpression.index != expression.size()){
             return "PARSE_ERROR";
         }
 

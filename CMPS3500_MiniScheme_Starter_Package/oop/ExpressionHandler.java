@@ -1,6 +1,6 @@
 /*
   / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga /
-  / ASGT: CHECKPOINT 3                                  /
+  / ASGT: CHECKPOINT                                   /
   / ORGN: CSUB - CMPS 3500                              /
   / FILE: ExpressionHandler.java                        /
   / DATE: 05/01/2026                                    /
@@ -11,44 +11,44 @@ import java.util.ArrayList;
 
 public class ExpressionHandler {
     protected List<String> expression;
-    protected int i;
+    protected int index;
 
     public ExpressionHandler(List<String> expression, int index){
         this.expression = expression;
-        this.i = index;
+        this.index = index;
     }
 
     protected List<String> extractPart(){
         List<String> part = new ArrayList<>();
         
-        if(i >= expression.size()){
+        if(index >= expression.size()){
             return part;
         }
 
-        if (!expression.get(i).equals("(")){
-            part.add(expression.get(i));
-            i++;
+        if (!expression.get(index).equals("(")){
+            part.add(expression.get(index));
+            index++;
             return part;
         }
 
         int depth = 0;
 
-        while(i < expression.size()){
-            part.add(expression.get(i));
+        while(index < expression.size()){
+            part.add(expression.get(index));
 
-            if(expression.get(i).equals("(")){
+            if(expression.get(index).equals("(")){
                 depth ++;
             }
-            else if(expression.get(i).equals(")")){
+            else if(expression.get(index).equals(")")){
                 depth--;
 
                 if(depth == 0){
-                    i++;
+                    index++;
                     break;
                 }
             }
 
-            i++;
+            index++;
         }
 
         return part;

@@ -26,7 +26,7 @@ public class Define extends ExpressionHandler{
         if(name.equals("(") ||
             name.equals(")")||
             valueExpression.isEmpty() ||
-            defineExpression.i != expression.size()){
+            defineExpression.index != expression.size()){
                 return "PARSE_ERROR";
         }
 
