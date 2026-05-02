@@ -38,9 +38,9 @@ public class Evaluate {
     if(op.equals("lambda")){
       return Lambda.handleLambda(parsed, scope);
     }
-    // if(op.equals("cond")){
-    //   return handleCond(parsed, scope);
-    // }
+    if(op.equals("cond")){
+      return Cond.handleCond(parsed, scope);
+    }
     // else{
     //   if(parsed.size() == 1){
     //     if(parsed.get(0).equals("#t" || parsed.get(0).equals"#f")){
