@@ -15,6 +15,7 @@ static std::vector<std::string> extractLetValue(
     int& i
 )
 {
+    // initialize an empty vector to hold the value expression
     std::vector<std::string> value_expr;
 
     if (i >= (int)expr.size())
@@ -24,6 +25,8 @@ static std::vector<std::string> extractLetValue(
 
     if (expr[i] != "(")
     {
+        // if the current token is not an opening parenthesis,
+        // return it as a single token value expression
         value_expr.push_back(expr[i]);
         i++;
         return value_expr;
@@ -31,6 +34,8 @@ static std::vector<std::string> extractLetValue(
 
     int depth = 0;
 
+    // while there are more tokens in the expression,
+    // keep adding them to value_expr until matching closing parenthesis are found
     while (i < (int)expr.size())
     {
         value_expr.push_back(expr[i]);
@@ -59,13 +64,17 @@ static std::vector<std::string> extractLetValue(
 // Handles the built-in let expression
 std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
 {
+    // create a new scope for the let expression
     Scope* new_scope = enterScope(scope);
 
     int i = 1;
-
+    
+    // check for parse errors, let expression must start 
+    // with ( and have at least 2 tokens
     if (i >= (int)expr.size() || expr[i] != "(") return "PARSE_ERROR";
     i++;
 
+    // extract the variable bindings in the let expression
     while (i < (int)expr.size() && expr[i] == "(")
     {
         i++;
@@ -79,6 +88,7 @@ std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
         std::string var = expr[i];
         i++;
 
+        // check for parse errors, variable name cannot be certain tokens or empty
         std::vector<std::string> value_expr = extractLetValue(expr, i);
 
         if (value_expr.empty() || i >= (int)expr.size())
@@ -89,7 +99,9 @@ std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
 
         i++;
 
+        // evaluate the value expression and check for errors
         std::string value = evaluate(value_expr, scope);
+
         if (value == "PARSE_ERROR" ||
             value == "UNDECLARED_IDENTIFIER" ||
             value == "WRONG_ARITY" ||
