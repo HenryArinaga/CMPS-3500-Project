@@ -99,7 +99,7 @@ std::string handleLet(const std::vector<std::string>& expr, Scope* scope)
 
         i++;
 
-        // evaluate the value expression and check for errors
+        // evaluate the value expression using the old/new scope
         std::string value = evaluate(value_expr, scope);
 
         if (value == "PARSE_ERROR" ||
