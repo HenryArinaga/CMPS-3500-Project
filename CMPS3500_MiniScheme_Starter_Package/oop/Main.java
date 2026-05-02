@@ -11,7 +11,6 @@ import java.util.List;
 public class Main{
     public static void main(String[] args) throws Exception {
         if(args.length != 1){
-            System.out.println("Usage: ./miniscm <file_name>");
             return;
         }
 
