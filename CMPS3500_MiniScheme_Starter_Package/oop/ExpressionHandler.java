@@ -46,6 +46,8 @@ public class ExpressionHandler {
         return part;
     }
 
+    //idk if this is a good name for this but I saw it was getting
+    //reused a lot so I turned it into a method
     protected static boolean getError(String value){
         return value.equals("PARSE_ERROR") ||
             value.equals("UNDECLARED_INDENTIFIER") ||

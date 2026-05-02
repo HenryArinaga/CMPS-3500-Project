@@ -32,9 +32,9 @@ public class Evaluate {
     if(op.equals("define")){
       return Define.handleDefine(parsed, scope);
     }
-    // if(op.equals("let")){
-    //   return handleLet(parsed, scope);
-    // }
+    if(op.equals("let")){
+      return Let.handleLet(parsed, scope);
+    }
     // if(op.equals("lambda")){
     //   return handleLambda(parsed, scope);
     // }
