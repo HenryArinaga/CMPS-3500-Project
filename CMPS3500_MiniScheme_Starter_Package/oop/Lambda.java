@@ -45,7 +45,7 @@ public class Lambda extends ExpressionHandler {
         return parts;
     }
 
-    private static List<String> spliteBySpace(String text){
+    private static List<String> splitBySpace(String text){
         List<String> tokens = new ArrayList<>();
         String current = "";
 
@@ -90,7 +90,7 @@ public class Lambda extends ExpressionHandler {
             lambdaExpression.index++;
         }
 
-        if(lambdaExpression.index >= expression.size() || !expression.get(lambdaExpression.index).equals(lambdaExpression)){
+        if(lambdaExpression.index >= expression.size() || !expression.get(lambdaExpression.index).equals(")")){
             return "PARSE_ERROR";
         }
 
@@ -137,7 +137,7 @@ public class Lambda extends ExpressionHandler {
         List<String> params = new ArrayList<>();
 
         if(!parts.get(1).isEmpty()){
-            params = splitString(lambdaValue, ',');
+            params = splitString(parts.get(1), ',');
         }
 
         if(params.size() != arguments.size()){
@@ -156,7 +156,7 @@ public class Lambda extends ExpressionHandler {
             lambdaScope.addScopeEntry(params.get(i), value);
         }
 
-        List<String> body = spliteBySpace(parts.get(2));
+        List<String> body = splitBySpace(parts.get(2));
         String result = Evaluate.evaluate(body, lambdaScope);
         lambdaScope.exitScope();
         return result;

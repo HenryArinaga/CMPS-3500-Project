@@ -13,7 +13,7 @@ public class Recursion {
         return !valueExpr.isEmpty() &&
         valueExpr.get(0).equals("(") &&
         valueExpr.size() > 1 &&
-        valueExpr.get(1) == "lambda";
+        valueExpr.get(1).equals("lambda");
     }
 
     public static String handleRecursiveDefine(

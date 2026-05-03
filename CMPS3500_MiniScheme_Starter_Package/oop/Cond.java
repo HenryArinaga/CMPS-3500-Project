@@ -43,11 +43,11 @@ public class Cond extends ExpressionHandler{
             List<String> testExpr = clauseExpression.extractPart();
             List<String> resultExpr = clauseExpression.extractPart();
         
-            if(testExpr.isEmpty() || resultExpr.isEmpty() || clauseExpression.index != expression.size()){
+            if(testExpr.isEmpty() || resultExpr.isEmpty() || clauseExpression.index != parsedClause.size()){
                 return "PARSE_ERROR";
             }
 
-            if(testExpr.size() == 1 && testExpr.get(0) == "else"){
+            if(testExpr.size() == 1 && testExpr.get(0).equals("else")){
                 if(sawElse || condExpression.index != expression.size()){
                     return "PARSE_ERROR";
                 }
@@ -62,11 +62,11 @@ public class Cond extends ExpressionHandler{
                 return testValue;
             }
 
-            if(testValue == "#t"){
+            if(testValue.equals("#t")){
                 return Evaluate.evaluate(resultExpr, scope);
             }
 
-            if(testValue == "#f"){
+            if(!testValue.equals("#f")){
                 return "TYPE_MISMATCH";
             }
         }

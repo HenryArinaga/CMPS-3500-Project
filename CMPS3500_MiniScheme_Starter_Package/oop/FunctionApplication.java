@@ -92,7 +92,7 @@ public class FunctionApplication extends ExpressionHandler {
             return false;
         }
 
-        this.result = Integer.parseInt(value);
+        this.value = Integer.parseInt(value);
         return true;
     }
 

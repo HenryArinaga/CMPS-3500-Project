@@ -30,9 +30,9 @@ public class Define extends ExpressionHandler{
                 return "PARSE_ERROR";
         }
 
-        // if(isRecursiveDefinition(valueExpression)){
-        //     return handleRecursiveDefine(name, valueExpression, scope);
-        // }
+        if(Recursion.isRecursiveDefinition(valueExpression)){
+            return Recursion.handleRecursiveDefine(name, valueExpression, scope);
+        }
 
         String value = Evaluate.evaluate(valueExpression, scope);
         if(getError(value)){
