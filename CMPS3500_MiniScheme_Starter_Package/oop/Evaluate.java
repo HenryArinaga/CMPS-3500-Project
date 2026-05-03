@@ -54,7 +54,7 @@ public class Evaluate {
           start = 1;
         }
 
-        for (int i = 0; i< parsed.get(0).length(); i++){
+        for (int i = start; i< parsed.get(0).length(); i++){
           if(parsed.get(0).charAt(i) < '0' || parsed.get(0).charAt(i) > '9' ){
             isNumber = false;
           }
