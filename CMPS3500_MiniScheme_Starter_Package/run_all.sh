@@ -11,21 +11,129 @@ case "$cmd" in
     impl="${2:-}"
     file="${3:-}"
 
-    # if impl=procedural:
-    #if [ $impl -eq "procedural" ]; then
+    # start of procedural case
     if [ "$2" == "procedural" ]; then
 
-        output=$(./procedural/cpp_interpreter "$file") # run: cpp_interpreter <file_name.scm>
+        # compile interpreter program if not found
+        if [ ! -f "./procedural/cpp_interpreter" ]; then
+            g++ ./procedural/*.cpp -o ./procedural/cpp_interpreter
+        fi
 
-        echo "Implementation: ${impl}"
-        echo "Case: ${file}"
-        echo "Status: OK"        # <------- Status is always OK for now
-        echo "Result: ${output}"
-        #echo "Type: -----"   # <----- CHANGE TYPE, maybe use a variable.
-        
-        #implement error messages (later)
-        #echo "Error: NOT_IMPLEMENTED"  
+        # process interpreter's output
+        mapfile -t lines < <(./procedural/cpp_interpreter "$file")
+        result="${lines[0]:-}"
+        type="${lines[1]:-}"
+
+        # print error output
+        if [ "$type" == "ERROR" ]; then
+          echo "Implementation: ${impl}"
+          echo "Case: ${file}"
+          echo "Status: ERROR"
+          echo "Error: ${result}" # "result" stores the detailed error message
+        fi
+
+        # print this output if there was no error
+        if [ ! "$type" == "ERROR" ]; then
+          echo "Implementation: ${impl}"
+          echo "Case: ${file}"
+          echo "Status: OK"
+          echo "Result: ${result}"
+          echo "Type: ${type}"
+        fi
+
+    fi # end of procedural case
+
+    # if [ "$2" == "oop" ]; then
+    #     echo "Implementation: ${impl}"
+    #     echo "Case: ${file}"
+    #     echo "Status: Work in progress"
+    #     echo "Result: Work in progress"
+    #     echo "Type: Work in progress"
+    # fi
+
+# --------------------------------------------------
+    # # start of oop case
+    if [ "$2" == "oop" ]; then
+
+        # compile interpreter program if not found
+        if [ ! -f "./oop/Main" ]; then
+            javac ./oop/*.java
+        fi
+
+        # process interpreter's output
+        mapfile -t lines < <( java -cp oop Main "$file")
+        result="${lines[0]:-}"
+        type="${lines[1]:-}"
+
+        # print error output
+        if [ "$type" == "ERROR" ]; then
+          echo "Implementation: ${impl}"
+          echo "Case: ${file}"
+          echo "Status: ERROR"
+          echo "Error: ${result}" # "result" stores the detailed error message
+        fi
+
+        # print this output if there was no error
+        if [ ! "$type" == "ERROR" ]; then
+          echo "Implementation: ${impl}"
+          echo "Case: ${file}"
+          echo "Status: OK"
+          echo "Result: ${result}"
+          echo "Type: ${type}"
+        fi
+
+    fi # end of procedural case
+
+# --------------------------------------------------
+    ;;
+  compare-case)
+    file="${2:-}"
+
+    # ------------------------- C++ program -----------------------------
+    # compile interpreter program if not found
+    if [ ! -f "./procedural/cpp_interpreter" ]; then
+        g++ ./procedural/*.cpp -o ./procedural/cpp_interpreter
     fi
+
+    # process interpreter's output
+    mapfile -t lines < <(./procedural/cpp_interpreter "$file"| tr -d '\r')
+    result1="${lines[0]:-}"
+    type1="${lines[1]:-}"
+
+    # print this output if there was no error
+    if [ ! "$type1" == "ERROR" ]; then
+        echo "procedural: OK -> ${result1} : ${type1}"
+        # echo "oop:        Work in progress" <---- remove once oop works
+    fi
+
+    # print error output
+    if [ "$type1" == "ERROR" ]; then
+        echo "ERROR -> ${result1}"
+        # echo "oop:        Work in progress" <---- remove once oop works
+    fi
+
+    # -------------------------- JAVA program -----------------------------
+    # compile interpreter program if not found
+    if [ ! -f "./oop/Main" ]; then
+        javac ./oop/*.java
+    fi
+
+    # process interpreter's output
+    mapfile -t lines < <(java -cp oop Main "$file")
+    result2="${lines[0]:-}"
+    type2="${lines[1]:-}"
+
+    # print this output if there was no error
+    if [ ! "$type2" == "ERROR" ]; then
+        echo "oop:        OK -> ${result2} : ${type2}"
+    fi
+
+    # print error output
+    if [ "$type2" == "ERROR" ]; then
+        echo "ERROR -> ${result2}"
+    fi
+    
+    echo "functional: SKIPPED "
     ;;
   *)
     echo "Usage: ./run_all.sh {list-cases|run-case <implementation> <file>|compare-case <file>}"

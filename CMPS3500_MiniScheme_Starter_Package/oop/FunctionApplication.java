@@ -158,6 +158,8 @@ public class FunctionApplication extends ExpressionHandler {
                 return faExp.error;
             }
 
+            faExp.result = faExp.value;
+
             while(faExp.index < expression.size()){
                 if (!faExp.resolveExpressionValue(scope)) {
                     return faExp.error;
