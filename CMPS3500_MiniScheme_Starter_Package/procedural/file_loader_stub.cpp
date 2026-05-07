@@ -12,6 +12,7 @@
 // Replace or adapt as needed.
 #include <fstream>
 #include <sstream>
+#include <stdexcept> // for std::runtime_error
 #include <string>
 
 std::string read_file(const std::string& path) {
