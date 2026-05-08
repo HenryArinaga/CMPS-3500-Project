@@ -1,17 +1,64 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga #
+# ASGT: CHECKPOINT                                    #
+# ORGN: CSUB - CMPS 3500                              #
+# FILE: ExpressionHandler.java                        #
+# DATE: 05/01/2026                                    #
+
 # variable cmd is set to the first argument passed
 cmd="${1:-}"
+
+unknown_case="$*"
+
 case "$cmd" in
   list-cases)
-    find tests/public challenges/public -type f \( -name '*.scm' -o -name '*.txt' \) 2>/dev/null | sort || true
+
+    echo "Public Core Cases:"
+    find tests/public challenges/public \
+        -type f \( -name 'core*.scm' -o -name 'let*.scm' -o -name 'addon*.scm' \
+                -o -name 'bool*.scm' -o -name 'lambda*.scm' -o -name 'recursion*.scm' \
+                -o -name 'sample_case.scm' \) 2>/dev/null \
+                | xargs -n 1 basename \
+                | sort \
+                | sed -z 's/\n/, /g; s/, $/\n/; s/^/  /' \
+                || true
+
+    echo "Public Error Cases:"
+    find tests/public challenges/public \
+        -type f \( -name 'error*.scm' -o -name 'syntax*.scm' \) 2>/dev/null \
+                | xargs -n 1 basename \
+                | sort \
+                | sed -z 's/\n/, /g; s/, $/\n/; s/^/  /' \
+                || true
+
     ;;
   run-case)
+
+    # check for no implementation selection
+    if [ ! "${2:-}" ]; then
+        echo "Error: Please choose an implementation (oop/procedural)"
+        exit 1
+    fi
+
     impl="${2:-}"
+
+    # check for emtpy file path
+    if [ ! "${3:-}" ]; then
+        echo "Error: Please enter file path"
+        exit 1
+    fi
+
     file="${3:-}"
 
-    # start of procedural case
+    # Stop the script if file is not found
+    if [ ! -f "$file" ]; then
+        echo "Error: File '${file}' not found"
+        exit 1
+    fi
+
+    # ----------------- start of procedural case -----------------
     if [ "$2" == "procedural" ]; then
 
         # compile interpreter program if not found
@@ -29,7 +76,7 @@ case "$cmd" in
           echo "Implementation: ${impl}"
           echo "Case: ${file}"
           echo "Status: ERROR"
-          echo "Error: ${result}" # "result" stores the detailed error message
+          echo "Error: ${result}" # "result" stores the error message
         fi
 
         # print this output if there was no error
@@ -41,18 +88,11 @@ case "$cmd" in
           echo "Type: ${type}"
         fi
 
-    fi # end of procedural case
+    fi
+    # ----------------- end of procedural case -----------------
 
-    # if [ "$2" == "oop" ]; then
-    #     echo "Implementation: ${impl}"
-    #     echo "Case: ${file}"
-    #     echo "Status: Work in progress"
-    #     echo "Result: Work in progress"
-    #     echo "Type: Work in progress"
-    # fi
 
-# --------------------------------------------------
-    # # start of oop case
+    #  ----------------- start of oop case -----------------
     if [ "$2" == "oop" ]; then
 
         # compile interpreter program if not found
@@ -70,7 +110,7 @@ case "$cmd" in
           echo "Implementation: ${impl}"
           echo "Case: ${file}"
           echo "Status: ERROR"
-          echo "Error: ${result}" # "result" stores the detailed error message
+          echo "Error: ${result}" # "result" stores the error message
         fi
 
         # print this output if there was no error
@@ -82,12 +122,29 @@ case "$cmd" in
           echo "Type: ${type}"
         fi
 
-    fi # end of procedural case
+    fi
+    # ----------------- end of oop case -----------------
 
-# --------------------------------------------------
     ;;
   compare-case)
+
+    # check for emtpy file path
+    if [ ! "${2:-}" ]; then
+        echo "Error: Please enter file path"
+        exit 1
+    fi
+
     file="${2:-}"
+
+    # Stop the script if file is not found
+    if [ ! -f "$file" ]; then
+        echo "Error: File '${file}' not found"
+        exit 1
+    fi
+
+    echo ""
+    echo "Case: ${file}"
+    echo ""
 
     # ------------------------- C++ program -----------------------------
     # compile interpreter program if not found
@@ -103,13 +160,11 @@ case "$cmd" in
     # print this output if there was no error
     if [ ! "$type1" == "ERROR" ]; then
         echo "procedural: OK -> ${result1} : ${type1}"
-        # echo "oop:        Work in progress" <---- remove once oop works
     fi
 
     # print error output
     if [ "$type1" == "ERROR" ]; then
-        echo "ERROR -> ${result1}"
-        # echo "oop:        Work in progress" <---- remove once oop works
+        echo "procedural: ERROR -> ${result1}"
     fi
 
     # -------------------------- JAVA program -----------------------------
@@ -130,13 +185,16 @@ case "$cmd" in
 
     # print error output
     if [ "$type2" == "ERROR" ]; then
-        echo "ERROR -> ${result2}"
+        echo "oop:        ERROR -> ${result2}"
     fi
     
+    # Print "skipped functional" message
     echo "functional: SKIPPED "
+    echo ""
     ;;
   *)
-    echo "Usage: ./run_all.sh {list-cases|run-case <implementation> <file>|compare-case <file>}"
+    # Handle Unknown Input
+    echo "Error: Unknown command ${unknown_case@Q}. Valid commands are: list-cases, compare-case"
     exit 1
     ;;
 esac

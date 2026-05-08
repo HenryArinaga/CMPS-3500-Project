@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Main{
     public static void main(String[] args) throws Exception {
+        try{
         if(args.length != 1){
             return;
         }
@@ -49,5 +50,11 @@ public class Main{
         }
         
         global.exitScope();
+        } catch(Exception exception1){
+            System.out.println(exception1.getMessage() + "\nERROR");
+        }
+        catch(Throwable t){
+            System.out.println("An unknown error occured. \nERROR");
+        }
     }
 }
