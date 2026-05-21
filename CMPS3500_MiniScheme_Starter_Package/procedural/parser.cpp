@@ -1,9 +1,9 @@
 /*
   / NAME: Henry Arinaga, Alberto Molina, Peter Uzuriaga  /
-  / ASGT: CHECKPOINT 1                                  /
-  / ORGN: CSUB - CMPS 3500                              /
-  / FILE: parser.cpp                                    /
-  / DATE: 03/29/2026                                    /
+  / ASGT: CHECKPOINT 1                                   /
+  / ORGN: CSUB - CMPS 3500                               /
+  / FILE: parser.cpp                                     /
+  / DATE: 03/29/2026                                     /
 */
 
 #include "parser.h"
@@ -26,7 +26,7 @@ std::vector<std::string> parseTokens(const std::vector<std::string> &input_token
 
         if (input_tokens[input_tokens.size() - 1] != ")")
         {
-            std::cerr << "Parse error: missing closing parenthesis\n";
+            parsed_tokens.push_back("PARSE_ERROR");
             return parsed_tokens;
         }
 
@@ -75,6 +75,13 @@ std::vector<std::vector<std::string>> splitExpressions(const std::vector<std::st
         {
             depth--;
 
+            if (depth < 0)
+            {
+                std::vector<std::vector<std::string>> parse_error;
+                parse_error.push_back(std::vector<std::string>(1, "PARSE_ERROR"));
+                return parse_error;
+            }
+
             if (depth == 0)
             {
                 expressions.push_back(current);
@@ -87,6 +94,13 @@ std::vector<std::vector<std::string>> splitExpressions(const std::vector<std::st
             single.push_back(tokens[i]);
             expressions.push_back(single);
         }
+    }
+
+    if (depth != 0)
+    {
+        std::vector<std::vector<std::string>> parse_error;
+        parse_error.push_back(std::vector<std::string>(1, "PARSE_ERROR"));
+        return parse_error;
     }
 
     return expressions;
